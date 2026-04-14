@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contenido Daniel RRSS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --bg2: #161618;
+  --bg3: #1e1e21;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #f0ede8;
+  --text2: #8a8580;
+  --text3: #54524f;
+  --accent: #c8f060;
+  --accent2: #a8d040;
+  --accent-dim: rgba(200,240,96,0.12);
+  --accent-dim2: rgba(200,240,96,0.06);
+  --red: #ff6b5b;
+  --amber: #f0a840;
+  --blue: #60a8f0;
+  --teal: #50d0a0;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+code, .mono { font-family: 'DM Mono', monospace; }
+
+/* LAYOUT */
+.shell { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.main { flex: 1; min-width: 0; padding: 2rem; max-width: 860px; }
+.logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+.logo-title { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; }
+.logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border-radius: 0; transition: all .15s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.on { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim2); }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* MODE SELECTOR */
+.mode-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.5rem; }
+.mode-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: all .15s; }
+.mode-card:hover { border-color: var(--border2); background: var(--bg2); }
+.mode-card.sel { border-color: var(--accent); background: var(--accent-dim); }
+.mode-card.sel .mc-t { color: var(--accent); }
+.mc-badge { font-size: 10px; font-weight: 500; font-family: 'DM Mono', monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; display: block; }
+.mc-t { font-size: 13px; font-weight: 500; color: var(--text); }
+.mc-s { font-size: 11px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+.mode-card.sel .mc-badge { color: var(--accent2); }
+
+/* BRAND/UGC BOX */
+.extra-box { display: none; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+.extra-box.on { display: block; }
+
+/* PAGE HEADER */
+.page-hd { margin-bottom: 1.5rem; }
+.page-hd h2 { font-size: 22px; font-weight: 500; color: var(--text); }
+.page-hd p { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+/* CARDS */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .05em; font-family: 'DM Mono', monospace; }
+
+/* FORMS */
+.lbl { font-size: 11px; color: var(--text3); display: block; margin-bottom: 5px; margin-top: 12px; text-transform: uppercase; letter-spacing: .05em; font-family: 'DM Mono', monospace; }
+.lbl:first-child { margin-top: 0; }
+input[type=text], select, textarea {
+  width: 100%; padding: 9px 12px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border .15s;
+}
+input[type=text]:focus, select:focus, textarea:focus { border-color: var(--border2); }
+select { cursor: pointer; }
+select option { background: var(--bg3); }
+textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
+
+/* BUTTONS */
+.btn { padding: 9px 18px; border-radius: var(--radius); border: none; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+.btn-primary { background: var(--accent); color: #0e0e0f; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); background: var(--bg3); }
+.btn-danger { background: transparent; border: 1px solid rgba(255,107,91,0.3); color: var(--red); font-size: 11px; padding: 4px 8px; }
+.btn-danger:hover { background: rgba(255,107,91,0.08); }
+.btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+/* CHAT OUTPUT */
+.chat-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-top: 1rem; min-height: 80px; font-size: 13px; color: var(--text2); line-height: 1.7; white-space: pre-wrap; display: none; }
+.chat-box.on { display: block; }
+.chat-box.loading { color: var(--text3); }
+.chat-label { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; display: block; }
+
+/* API KEY SETUP */
+.apikey-screen { display: none; }
+.apikey-screen.on { display: block; }
+.setup-card { max-width: 480px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; }
+.setup-title { font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+.setup-sub { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 1.5rem; }
+.step-list { list-style: none; margin-bottom: 1.5rem; }
+.step-list li { display: flex; gap: 12px; font-size: 13px; color: var(--text2); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+.step-list li:last-child { border-bottom: none; }
+.step-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); flex-shrink: 0; padding-top: 2px; }
+.key-note { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.5; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* TAGS */
+.tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; margin: 2px; cursor: pointer; border: 1px solid transparent; transition: opacity .15s; }
+.tag:hover { opacity: .75; }
+.tag-green { background: rgba(80,208,160,0.12); color: var(--teal); border-color: rgba(80,208,160,0.2); }
+.tag-blue { background: rgba(96,168,240,0.12); color: var(--blue); border-color: rgba(96,168,240,0.2); }
+.tag-amber { background: rgba(240,168,64,0.12); color: var(--amber); border-color: rgba(240,168,64,0.2); }
+.tag-accent { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,96,0.2); }
+
+/* GRID */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+
+/* MINI CARDS */
+.mini { background: var(--bg3); border-radius: var(--radius); padding: 10px 12px; }
+.mini-l { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.mini-b { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* METRIC CARDS */
+.metric-card { background: var(--bg3); border-radius: var(--radius); padding: 12px; }
+.metric-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.metric-val { font-size: 22px; font-weight: 500; color: var(--text); }
+
+/* TRENDS */
+.trend-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.trend-item:last-child { border-bottom: none; }
+.trend-n { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 18px; padding-top: 2px; }
+.trend-t { font-size: 13px; font-weight: 500; color: var(--text); }
+.trend-d { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+.trend-cta { font-size: 11px; color: var(--accent); margin-top: 5px; cursor: pointer; display: inline-block; font-family: 'DM Mono', monospace; }
+.trend-cta:hover { opacity: .75; }
+
+/* PROJ */
+.proj-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.proj-row:last-child { border-bottom: none; }
+.proj-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.proj-info { flex: 1; min-width: 0; }
+.proj-title { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-meta { font-size: 11px; color: var(--text3); margin-top: 1px; font-family: 'DM Mono', monospace; }
+.empty { text-align: center; padding: 2rem; color: var(--text3); font-size: 13px; }
+
+/* WEEK CALENDAR */
+.week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-top: 10px; }
+.day-col .day-hd { font-size: 10px; color: var(--text3); text-align: center; padding: 4px; font-family: 'DM Mono', monospace; }
+.day-slot { font-size: 10px; text-align: center; padding: 5px 3px; border-radius: 6px; border: 1px solid transparent; margin-top: 4px; line-height: 1.3; }
+.sl-r { background: rgba(96,168,240,.12); color: var(--blue); border-color: rgba(96,168,240,.2); }
+.sl-c { background: rgba(80,208,160,.12); color: var(--teal); border-color: rgba(80,208,160,.2); }
+.sl-f { background: rgba(200,240,96,.08); color: var(--accent); border-color: rgba(200,240,96,.15); }
+.sl-s { background: rgba(240,168,64,.1); color: var(--amber); border-color: rgba(240,168,64,.2); }
+.sl-o { background: var(--bg3); color: var(--text3); border-color: var(--border); }
+
+/* PERF BARS */
+.perf-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.perf-row:last-child { border-bottom: none; }
+.perf-label { font-size: 12px; color: var(--text2); min-width: 72px; font-family: 'DM Mono', monospace; font-size: 11px; }
+.perf-track { flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.perf-fill { height: 100%; border-radius: 2px; }
+.perf-val { font-size: 11px; color: var(--text3); min-width: 50px; text-align: right; font-family: 'DM Mono', monospace; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0e0e0f; padding: 10px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; transform: translateY(80px); opacity: 0; transition: all .25s; z-index: 100; pointer-events: none; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* SEASONS */
+.stab { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text2); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+.stab.on { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,96,.3); }
+
+/* HASHTAG GROUPS */
+.ht-group { margin-bottom: 14px; }
+.ht-group-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .05em; color: var(--text3); margin-bottom: 6px; }
+
+/* SECTION */
+.sec { display: none; }
+.sec.on { display: block; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* RESPONSIVE */
+@media(max-width:680px) {
+  .sidebar { display: none; }
+  .main { padding: 1rem; }
+  .mode-bar { grid-template-columns: 1fr; }
+  .g2,.g3,.g4 { grid-template-columns: 1fr; }
+  .week-grid { grid-template-columns: repeat(4,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- API KEY SETUP SCREEN -->
+<div id="setup-screen" class="apikey-screen on" style="padding:2rem">
+  <div class="setup-card">
+    <div class="setup-title">Configurar tu agente</div>
+    <div class="setup-sub">Para que la IA funcione necesitas una API key de Anthropic. Solo se configura una vez y se guarda en tu navegador.</div>
+    <ul class="step-list">
+      <li><span class="step-n">01</span><span>Ve a <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> y crea una cuenta gratis</span></li>
+      <li><span class="step-n">02</span><span>En el menú izquierdo haz clic en <strong style="color:var(--text)">API Keys</strong></span></li>
+      <li><span class="step-n">03</span><span>Haz clic en <strong style="color:var(--text)">Create Key</strong>, copia la clave que empieza con <code>sk-ant-</code></span></li>
+      <li><span class="step-n">04</span><span>Pégala aquí abajo y haz clic en Guardar</span></li>
+    </ul>
+    <label class="lbl">Tu API Key</label>
+    <input type="text" id="api-key-input" placeholder="sk-ant-api03-..." style="font-family:'DM Mono',monospace;letter-spacing:.02em">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveApiKey()">Guardar y continuar</button>
+    </div>
+    <p class="key-note">Tu clave se guarda solo en tu navegador (localStorage). No se envía a ningún servidor externo excepto a Anthropic directamente. Costo estimado: ~$1–5 USD/mes con uso normal.</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="shell" style="display:none">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-title">Daniel RRSS</div>
+      <div class="logo-sub">outdoor · instagram</div>
+    </div>
+    <div class="nav-item on" onclick="nav('flujo',this)"><div class="nav-dot"></div>Flujo rápido</div>
+    <div class="nav-item" onclick="nav('caption',this)"><div class="nav-dot"></div>Caption + hashtags</div>
+    <div class="nav-item" onclick="nav('tendencias',this)"><div class="nav-dot"></div>Tendencias</div>
+    <div class="nav-item" onclick="nav('temporada',this)"><div class="nav-dot"></div>Temporada</div>
+    <div class="nav-item" onclick="nav('analisis',this)"><div class="nav-dot"></div>Análisis</div>
+    <div class="nav-item" onclick="nav('proyectos',this)"><div class="nav-dot"></div>Proyectos</div>
+    <div class="nav-item" onclick="nav('formatos',this)"><div class="nav-dot"></div>Formatos IG</div>
+    <div style="margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px">api key</div>
+      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;width:100%" onclick="resetKey()">Cambiar key</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- MODE -->
+    <div class="mode-bar">
+      <div class="mode-card sel" data-mode="personal" onclick="setMode(this)">
+        <span class="mc-badge">mi cuenta</span>
+        <div class="mc-t">Contenido propio</div>
+        <div class="mc-s">Para tu perfil y comunidad</div>
+      </div>
+      <div class="mode-card" data-mode="marca" onclick="setMode(this)">
+        <span class="mc-badge">marca</span>
+        <div class="mc-t">Patrocinado</div>
+        <div class="mc-s">Colaboración o canje</div>
+      </div>
+      <div class="mode-card" data-mode="ugc" onclick="setMode(this)">
+        <span class="mc-badge">ugc</span>
+        <div class="mc-t">Para la marca</div>
+        <div class="mc-s">Entregable profesional</div>
+      </div>
+    </div>
+
+    <div class="extra-box" id="brand-box">
+      <div class="card-title">Datos de la marca</div>
+      <label class="lbl">Marca / producto</label><input type="text" id="brand-name" placeholder="ej: Lippi, Black Diamond, Salomon...">
+      <label class="lbl">Mensaje clave</label><input type="text" id="brand-msg" placeholder="ej: lanzamiento carpa ultralight, campaña invierno...">
+      <label class="lbl">Brief</label><textarea id="brand-brief" placeholder="instrucciones específicas..."></textarea>
+      <label class="lbl">Tipo de acuerdo</label>
+      <select id="brand-deal"><option>Colaboración pagada</option><option>Canje de producto</option><option>Embajador de marca</option><option>Post único</option></select>
+    </div>
+    <div class="extra-box" id="ugc-box">
+      <div class="card-title">Datos UGC</div>
+      <label class="lbl">Marca / producto</label><input type="text" id="ugc-brand" placeholder="ej: Lippi mochila X35...">
+      <label class="lbl">Uso del contenido</label>
+      <select id="ugc-uso"><option>Feed Instagram de la marca</option><option>Anuncios Meta Ads</option><option>Stories IG</option><option>TikTok de la marca</option><option>Web / e-commerce</option><option>Múltiples canales</option></select>
+      <label class="lbl">Entregables</label><input type="text" id="ugc-entregables" placeholder="ej: 1 video 30 seg + 3 fotos en uso...">
+      <label class="lbl">Brief</label><textarea id="ugc-brief" placeholder="instrucciones específicas..."></textarea>
+    </div>
+
+    <!-- FLUJO RÁPIDO -->
+    <div id="sec-flujo" class="sec on">
+      <div class="page-hd"><h2>Flujo rápido</h2><p>De idea a contenido completo — hooks, guión, tomas, caption y hashtags</p></div>
+      <div class="card">
+        <div class="card-title">Tu idea</div>
+        <label class="lbl">Formato</label>
+        <select id="fl-fmt"><option>Reels</option><option>Carrusel</option><option>Foto + caption</option><option>Stories en secuencia</option></select>
+        <label class="lbl">Idea en una línea</label>
+        <input type="text" id="fl-idea" placeholder="ej: dormí 3 noches en la cordillera con equipo ultralight...">
+        <label class="lbl">Tono</label>
+        <select id="fl-tone"><option>Aventurero / épico</option><option>Educativo / práctico</option><option>Personal / storytelling</option><option>Motivacional</option><option>Casual / humor</option></select>
+        <label class="lbl">Duración / extensión</label>
+        <select id="fl-dur"><option>15–30 seg</option><option>30–60 seg</option><option>60–90 seg</option><option>Carrusel 6–8 slides</option><option>Carrusel 10 slides</option></select>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="runFlujo('completo')">Generar todo ↗</button>
+          <button class="btn btn-ghost" onclick="runFlujo('hooks')">Solo hooks</button>
+          <button class="btn btn-ghost" onclick="runFlujo('guion')">Solo guión</button>
+          <button class="btn btn-ghost" onclick="runFlujo('tomas')">Solo tomas</button>
+          <button class="btn btn-ghost" onclick="saveIdea()">+ Guardar idea</button>
+        </div>
+      </div>
+      <div id="flujo-out" class="chat-box">
+        <span class="chat-label">respuesta del agente</span>
+        <div id="flujo-text"></div>
+      </div>
+    </div>
+
+    <!-- CAPTION + HASHTAGS -->
+    <div id="sec-caption" class="sec">
+      <div class="page-hd"><h2>Caption + hashtags</h2><p>Caption listo para pegar y sets de hashtags por nivel</p></div>
+      <div class="card">
+        <div class="card-title">Generador</div>
+        <label class="lbl">Formato del post</label>
+        <select id="cap-fmt"><option>Reel</option><option>Carrusel</option><option>Foto estática</option><option>Story</option></select>
+        <label class="lbl">¿De qué trata?</label>
+        <textarea id="cap-topic" placeholder="ej: reel sobre mi primer trekking invernal en El Morado, equipo usado, aprendizajes..."></textarea>
+        <label class="lbl">Longitud</label>
+        <select id="cap-len"><option>Corto (1–3 líneas)</option><option>Medio (4–8 líneas)</option><option>Largo con storytelling (10+ líneas)</option></select>
+        <label class="lbl">CTA</label>
+        <select id="cap-cta"><option>Comenta tu experiencia</option><option>Guarda para tu próxima salida</option><option>Etiqueta a alguien</option><option>Seguir para más contenido</option><option>Link en bio</option><option>Sin CTA</option></select>
+        <div class="btn-row"><button class="btn btn-primary" onclick="runCaption()">Generar caption + hashtags ↗</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Banco de hashtags outdoor Chile</div>
+        <div class="ht-group">
+          <div class="ht-group-label">Nicho — alta relevancia</div>
+          <span class="tag tag-green">#outdoorchile</span><span class="tag tag-green">#trekkinchile</span><span class="tag tag-green">#montañachile</span><span class="tag tag-green">#senderismochile</span><span class="tag tag-green">#cordilleradelosandes</span><span class="tag tag-green">#patagoniachile</span>
+        </div>
+        <div class="ht-group">
+          <div class="ht-group-label">Medio — equilibrio alcance/relevancia</div>
+          <span class="tag tag-blue">#outdoor</span><span class="tag tag-blue">#hiking</span><span class="tag tag-blue">#trekking</span><span class="tag tag-blue">#adventure</span><span class="tag tag-blue">#ultralight</span><span class="tag tag-blue">#hikingadventures</span><span class="tag tag-blue">#backpacking</span>
+        </div>
+        <div class="ht-group">
+          <div class="ht-group-label">Masivo — mayor alcance</div>
+          <span class="tag tag-amber">#nature</span><span class="tag tag-amber">#travel</span><span class="tag tag-amber">#explore</span><span class="tag tag-amber">#mountains</span><span class="tag tag-amber">#adventure</span>
+        </div>
+      </div>
+      <div id="caption-out" class="chat-box"><span class="chat-label">caption generado</span><div id="caption-text"></div></div>
+    </div>
+
+    <!-- TENDENCIAS -->
+    <div id="sec-tendencias" class="sec">
+      <div class="page-hd"><h2>Tendencias</h2><p>Formatos virales actuales para contenido outdoor</p></div>
+      <div class="card">
+        <div class="card-title">Tendencias activas</div>
+        <div class="trend-item"><div class="trend-n">01</div><div><div class="trend-t">POV: soy el que sobreempaca vs ultralight</div><div class="trend-d">Comparación con humor. Alto engagement en comunidades outdoor. Funciona como Reel o Carrusel.</div><span class="trend-cta" onclick="injectTrend('POV: soy el que sobreempaca vs la persona ultralight')">→ usar esta idea</span></div></div>
+        <div class="trend-item"><div class="trend-n">02</div><div><div class="trend-t">Rating honesto de gear después de usarlo de verdad</div><div class="trend-d">Reviews post-uso real generan confianza. Carrusel con foto de cada ítem y nota del 1 al 10.</div><span class="trend-cta" onclick="injectTrend('rating honesto de gear después de usarlo de verdad en terreno')">→ usar esta idea</span></div></div>
+        <div class="trend-item"><div class="trend-n">03</div><div><div class="trend-t">Lo que nadie muestra del outdoor en IG</div><div class="trend-d">Romper la narrativa perfecta — ampollas, lluvia, errores. Alto engagement emocional.</div><span class="trend-cta" onclick="injectTrend('lo que nadie muestra del outdoor en Instagram — la realidad sin filtros')">→ usar esta idea</span></div></div>
+        <div class="trend-item"><div class="trend-n">04</div><div><div class="trend-t">Pack conmigo para [destino]</div><div class="trend-d">Formato "get ready with me" outdoor. Muy buscado, alta retención, funciona con cualquier ruta.</div><span class="trend-cta" onclick="injectTrend('pack conmigo para trekking de 3 días en la cordillera')">→ usar esta idea</span></div></div>
+        <div class="trend-item"><div class="trend-n">05</div><div><div class="trend-t">El spot que descubrí a 2h de Santiago</div><div class="trend-d">Contenido hiperlocal de alto valor. Los guardados explotan porque la audiencia quiere ir.</div><span class="trend-cta" onclick="injectTrend('el spot que descubrí a 2 horas de Santiago que casi nadie conoce')">→ usar esta idea</span></div></div>
+        <div class="trend-item"><div class="trend-n">06</div><div><div class="trend-t">Cuánto gasté en [ruta] — desglose real</div><div class="trend-d">Transparencia financiera + outdoor = altísimo alcance. Une dos nichos de máximo engagement.</div><span class="trend-cta" onclick="injectTrend('cuánto gasté en mi última ruta de trekking — desglose real y honesto')">→ usar esta idea</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Desarrollar idea trending</div>
+        <label class="lbl">¿Qué tendencia quieres explotar?</label>
+        <input type="text" id="trend-input" placeholder="ej: POV, antes vs después, rating honesto, pack conmigo...">
+        <div class="btn-row"><button class="btn btn-primary" onclick="runTrend()">Desarrollar ↗</button></div>
+      </div>
+      <div id="trend-out" class="chat-box"><span class="chat-label">idea desarrollada</span><div id="trend-text"></div></div>
+    </div>
+
+    <!-- TEMPORADA -->
+    <div id="sec-temporada" class="sec">
+      <div class="page-hd"><h2>Temporada</h2><p>Plan de contenido por época del año en Chile</p></div>
+      <div class="card">
+        <div class="card-title">Planificador estacional</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="stab on" onclick="setSeason('otono',this)">Otoño</button>
+          <button class="stab" onclick="setSeason('invierno',this)">Invierno</button>
+          <button class="stab" onclick="setSeason('primavera',this)">Primavera</button>
+          <button class="stab" onclick="setSeason('verano',this)">Verano</button>
+        </div>
+        <div id="season-info"></div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="runTemporada()">Generar plan de 4 semanas ↗</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Semana tipo</div>
+        <div class="week-grid" id="week-cal"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:8px;height:8px;border-radius:2px;background:rgba(96,168,240,.3);display:inline-block"></span>reel</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:8px;height:8px;border-radius:2px;background:rgba(80,208,160,.3);display:inline-block"></span>carrusel</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:8px;height:8px;border-radius:2px;background:rgba(200,240,96,.2);display:inline-block"></span>foto</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:8px;height:8px;border-radius:2px;background:rgba(240,168,64,.25);display:inline-block"></span>story</span>
+        </div>
+      </div>
+      <div id="temp-out" class="chat-box"><span class="chat-label">plan generado</span><div id="temp-text"></div></div>
+    </div>
+
+    <!-- ANÁLISIS -->
+    <div id="sec-analisis" class="sec">
+      <div class="page-hd"><h2>Análisis</h2><p>Entiende qué está funcionando y qué escalar</p></div>
+      <div class="card">
+        <div class="card-title">Registrar métricas</div>
+        <label class="lbl">Título del post</label>
+        <input type="text" id="met-titulo" placeholder="ej: Reel trekking El Morado — abril">
+        <div class="g2" style="margin-top:10px;gap:8px">
+          <div><label class="lbl" style="margin-top:0">Views</label><input type="text" id="met-views" placeholder="12400"></div>
+          <div><label class="lbl" style="margin-top:0">Likes</label><input type="text" id="met-likes" placeholder="340"></div>
+          <div><label class="lbl" style="margin-top:0">Comentarios</label><input type="text" id="met-cmts" placeholder="28"></div>
+          <div><label class="lbl" style="margin-top:0">Guardados</label><input type="text" id="met-saves" placeholder="156"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="saveMetrica()">Guardar métrica</button></div>
+      </div>
+      <div class="card" id="metrics-display"></div>
+      <div class="card">
+        <div class="card-title">Analizar rendimiento</div>
+        <label class="lbl">¿Qué quieres analizar?</label>
+        <select id="anal-tipo">
+          <option>Qué formato me funciona mejor</option>
+          <option>Qué tipo de contenido genera más guardados</option>
+          <option>Cómo mejorar mi tasa de engagement</option>
+          <option>Qué contenido repetir y escalar</option>
+          <option>Análisis completo de estrategia</option>
+        </select>
+        <label class="lbl">Contexto adicional (opcional)</label>
+        <textarea id="anal-ctx" placeholder="pega métricas adicionales o contexto relevante..."></textarea>
+        <div class="btn-row"><button class="btn btn-primary" onclick="runAnalisis()">Analizar ↗</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Benchmarks — cuentas outdoor &lt;50k</div>
+        <div class="perf-row"><div class="perf-label">Reels</div><div class="perf-track"><div class="perf-fill" style="width:88%;background:var(--blue)"></div></div><div class="perf-val">alcance</div></div>
+        <div class="perf-row"><div class="perf-label">Carrusel</div><div class="perf-track"><div class="perf-fill" style="width:74%;background:var(--teal)"></div></div><div class="perf-val">guardados</div></div>
+        <div class="perf-row"><div class="perf-label">Foto</div><div class="perf-track"><div class="perf-fill" style="width:50%;background:var(--accent)"></div></div><div class="perf-val">likes</div></div>
+        <div class="perf-row"><div class="perf-label">Stories</div><div class="perf-track"><div class="perf-fill" style="width:62%;background:var(--amber)"></div></div><div class="perf-val">replies</div></div>
+      </div>
+      <div id="anal-out" class="chat-box"><span class="chat-label">análisis</span><div id="anal-text"></div></div>
+    </div>
+
+    <!-- PROYECTOS -->
+    <div id="sec-proyectos" class="sec">
+      <div class="page-hd"><h2>Proyectos</h2><p>Banco de ideas con estado y seguimiento</p></div>
+      <div class="card">
+        <div class="card-title">Nueva idea</div>
+        <label class="lbl">Título / idea</label>
+        <input type="text" id="new-proj" placeholder="ej: Reel sobre mi primer bivouac en la cordillera...">
+        <label class="lbl">Formato</label>
+        <select id="new-proj-fmt"><option>Reels</option><option>Carrusel</option><option>Foto</option><option>Stories</option></select>
+        <div class="btn-row"><button class="btn btn-primary" onclick="addProj()">Agregar proyecto</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Banco de proyectos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block"></span>idea</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block"></span>en progreso</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block"></span>listo</span>
+          <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:7px;height:7px;border-radius:50%;background:var(--text3);display:inline-block"></span>publicado</span>
+        </div>
+        <div id="proj-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Desarrollar proyecto</div>
+        <label class="lbl">Selecciona un proyecto</label>
+        <select id="proj-sel"><option value="">— selecciona —</option></select>
+        <div class="btn-row"><button class="btn btn-primary" onclick="runProyecto()">Generar contenido completo ↗</button></div>
+      </div>
+      <div id="proj-out" class="chat-box"><span class="chat-label">contenido generado</span><div id="proj-text"></div></div>
+    </div>
+
+    <!-- FORMATOS IG -->
+    <div id="sec-formatos" class="sec">
+      <div class="page-hd"><h2>Formatos Instagram</h2><p>Claves y specs técnicos para cada formato</p></div>
+      <div class="card">
+        <div class="card-title">Haz clic en un formato</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:12px">
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Reels','El de mayor alcance orgánico. Hook visual en los primeros 3 seg. Duración óptima 30–60 seg. Subtítulos siempre — 85% ve sin sonido. Audio trending aumenta alcance hasta 3x. Loop al final.')"><div class="mini-l" style="color:var(--blue)">Reels</div><div class="mini-b">Video · 15–90 seg</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Carrusel','Mayor tasa de guardados. Slide 1 como hook visual. Slide 2 debe enganchar para que sigan. Último slide siempre con CTA. Máx 3 líneas por slide. Consistencia visual en todos.')"><div class="mini-l" style="color:var(--teal)">Carrusel</div><div class="mini-b">Slides · alto guardado</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Foto estática','Base del feed. Caption largo con storytelling funciona bien. Hashtags en primer comentario, no en el caption. Presets de Lightroom consistentes definen identidad visual.')"><div class="mini-l" style="color:var(--accent)">Foto</div><div class="mini-b">Feed · branding visual</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Stories','Canal más directo con seguidores. Zona segura: 250px top y bottom. Primera story decide si ven las siguientes. Guarda las mejores en Destacados bien organizados.')"><div class="mini-l" style="color:var(--amber)">Stories</div><div class="mini-b">24h · engagement</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Stories +','Encuestas y quizzes multiplican el engagement. Slider ¿cuánto aguantarías? funciona muy bien para outdoor. Siempre muestra resultados en la siguiente story.')"><div class="mini-l" style="color:var(--amber)">Stories interactivas</div><div class="mini-b">Encuestas · quizzes</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Collab','Aparece en feed de dos cuentas. Ideal para reviews con marcas de gear o salidas con otros creadores. Duplica alcance potencial en un solo post.')"><div class="mini-l" style="color:var(--red)">Collab</div><div class="mini-b">Doble audiencia</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Guía IG','SEO interno de Instagram. Usar keywords reales: Trekking cerca de Santiago. Agrupar por ruta, gear o nivel. Evergreen — aparece en búsquedas semanas después de publicar.')"><div class="mini-l" style="color:var(--text2)">Guía</div><div class="mini-b">SEO · evergreen</div></div>
+          <div class="mini" style="cursor:pointer" onclick="showFmtDetail('Live','Notifica a seguidores activos. Anunciar con 24h via Stories. Duración ideal 20–45 min. Q&A, planificación de ruta o unboxing de gear funciona bien. Guardar y reeditar como Reel.')"><div class="mini-l" style="color:var(--text2)">Live</div><div class="mini-b">Tiempo real · comunidad</div></div>
+        </div>
+        <div id="fmt-detail" style="display:none;padding:12px;background:var(--bg3);border-radius:var(--radius);font-size:13px;color:var(--text2);line-height:1.65"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Specs técnicos</div>
+        <div class="g2">
+          <div class="mini"><div class="mini-l" style="color:var(--blue)">Reels</div><div class="mini-b">9:16 · 1080×1920px<br>Hasta 90 seg · MP4/MOV</div></div>
+          <div class="mini"><div class="mini-l" style="color:var(--teal)">Carrusel</div><div class="mini-b">1:1 o 4:5 · hasta 10 slides<br>JPG / PNG / MP4</div></div>
+          <div class="mini"><div class="mini-l" style="color:var(--accent)">Stories</div><div class="mini-b">9:16 · 1080×1920px<br>Zona segura: 250px top/bot</div></div>
+          <div class="mini"><div class="mini-l" style="color:var(--amber)">Foto feed</div><div class="mini-b">1:1, 4:5 o 1.91:1<br>Mín 1080px · JPG/PNG &lt;8MB</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ── STATE ──────────────────────────────────────
+let apiKey = localStorage.getItem('daniel-api-key') || '';
+let currentMode = 'personal';
+let projects = [];
+let metrics = [];
+
+function init() {
+  if (apiKey) {
+    document.getElementById('setup-screen').classList.remove('on');
+    document.getElementById('app').style.display = 'flex';
+    loadData();
+    initSeason();
+  }
+}
+
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k.startsWith('sk-')) { toast('La key debe empezar con sk-ant-'); return; }
+  localStorage.setItem('daniel-api-key', k);
+  apiKey = k;
+  document.getElementById('setup-screen').classList.remove('on');
+  document.getElementById('app').style.display = 'flex';
+  loadData();
+  initSeason();
+}
+
+function resetKey() {
+  localStorage.removeItem('daniel-api-key');
+  apiKey = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('setup-screen').classList.add('on');
+}
+
+// ── DATA PERSISTENCE ───────────────────────────
+function loadData() {
+  try { projects = JSON.parse(localStorage.getItem('daniel-projects') || '[]'); } catch(e) { projects = []; }
+  try { metrics = JSON.parse(localStorage.getItem('daniel-metrics') || '[]'); } catch(e) { metrics = []; }
+  renderProjects();
+  renderMetrics();
+}
+
+function persist() {
+  localStorage.setItem('daniel-projects', JSON.stringify(projects));
+  localStorage.setItem('daniel-metrics', JSON.stringify(metrics));
+}
+
+// ── NAV ────────────────────────────────────────
+function nav(sec, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('on'));
+  document.getElementById('sec-' + sec).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── MODE ───────────────────────────────────────
+function setMode(el) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  currentMode = el.dataset.mode;
+  document.getElementById('brand-box').classList.toggle('on', currentMode === 'marca');
+  document.getElementById('ugc-box').classList.toggle('on', currentMode === 'ugc');
+}
+
+function getModeCtx() {
+  if (currentMode === 'marca') return `\nMODO: Patrocinado\nMarca: ${v('brand-name')||'–'}\nMensaje: ${v('brand-msg')||'–'}\nBrief: ${v('brand-brief')||'–'}\nAcuerdo: ${v('brand-deal')}`;
+  if (currentMode === 'ugc') return `\nMODO: UGC para marca\nMarca: ${v('ugc-brand')||'–'}\nUso: ${v('ugc-uso')}\nEntregables: ${v('ugc-entregables')||'–'}\nBrief: ${v('ugc-brief')||'–'}`;
+  return '\nMODO: Contenido propio — outdoor Chile';
+}
+
+// ── CLAUDE API ────────────────────────────────
+async function askClaude(prompt, outBoxId, textId) {
+  const box = document.getElementById(outBoxId);
+  const txt = document.getElementById(textId);
+  box.classList.add('on', 'loading');
+  txt.textContent = 'Generando...';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: 'Eres un experto en creación de contenido viral para Instagram, especializado en outdoor y aventura en Chile. Respondes siempre en español. Eres directo, concreto y sin relleno. Nunca usas asteriscos, markdown, ni formato especial. Solo texto limpio y bien estructurado con números y guiones cuando corresponda.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'Error en la API');
+    }
+
+    const data = await res.json();
+    const text = data.content?.map(i => i.text || '').join('\n') || '(sin respuesta)';
+    box.classList.remove('loading');
+    txt.textContent = text;
+  } catch (err) {
+    box.classList.remove('loading');
+    txt.textContent = 'Error: ' + err.message + '\n\nVerifica que tu API key sea correcta y tenga créditos disponibles.';
+  }
+}
+
+// ── HELPERS ───────────────────────────────────
+function v(id) { return (document.getElementById(id) || {}).value || ''; }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── FLUJO RÁPIDO ──────────────────────────────
+function runFlujo(tipo) {
+  const fmt = v('fl-fmt'), idea = v('fl-idea') || 'contenido outdoor', tone = v('fl-tone'), dur = v('fl-dur');
+  const ctx = getModeCtx();
+  const prompts = {
+    completo: `[FLUJO COMPLETO]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGenera TODO en este orden:\n1. HOOK — 3 opciones (máx 15 palabras c/u)\n2. GUIÓN — completo con tomas en [corchetes]\n3. PLAN DE TOMAS — máx 8 tomas (número, plano, acción, duración)\n4. CAPTION — listo para publicar con emojis y CTA\n5. HASHTAGS — 3 grupos: nicho Chile, medio, masivo (5 cada uno)\n\nSepara cada sección con: ---`,
+    hooks: `[HOOKS]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}${ctx}\n\nCrea 5 hooks para ${fmt}. Máx 15 palabras. Outdoor Chile. Numerados.`,
+    guion: `[GUIÓN]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGuión completo: HOOK, DESARROLLO con tomas [entre corchetes], CIERRE + CTA. Outdoor Chile.`,
+    tomas: `[TOMAS]\nFormato: ${fmt}\nIdea: ${idea}${ctx}\n\nPlan de rodaje, máx 8 tomas. Para cada una: número, tipo de plano, qué grabar, duración, nota técnica outdoor.`
+  };
+  askClaude(prompts[tipo], 'flujo-out', 'flujo-text');
+}
+
+function saveIdea() {
+  const idea = v('fl-idea'), fmt = v('fl-fmt');
+  if (!idea.trim()) { toast('Escribe una idea primero'); return; }
+  projects.unshift({ id: Date.now(), title: idea, fmt, status: 'idea', date: new Date().toLocaleDateString('es-CL') });
+  persist(); renderProjects();
+  document.getElementById('fl-idea').value = '';
+  toast('Idea guardada en Proyectos');
+}
+
+// ── CAPTION ───────────────────────────────────
+function runCaption() {
+  const fmt = v('cap-fmt'), topic = v('cap-topic') || 'contenido outdoor', len = v('cap-len'), cta = v('cap-cta');
+  const ctx = getModeCtx();
+  askClaude(`[CAPTION + HASHTAGS]\nFormato: ${fmt}\nContenido: ${topic}\nLongitud: ${len}\nCTA: ${cta}${ctx}\n\nGenera:\n1. CAPTION completo listo para copiar (emojis estratégicos, saltos de línea, CTA al final)\n2. SET NICHO: 8 hashtags outdoor Chile específicos\n3. SET MEDIO: 7 hashtags outdoor equilibrados\n4. SET MASIVO: 5 hashtags alto alcance\nMáx 20 hashtags en total.`, 'caption-out', 'caption-text');
+}
+
+// ── TENDENCIAS ────────────────────────────────
+function injectTrend(idea) {
+  document.getElementById('fl-idea').value = idea;
+  nav('flujo', document.querySelectorAll('.nav-item')[0]);
+}
+
+function runTrend() {
+  const trend = v('trend-input') || 'tendencia outdoor';
+  const ctx = getModeCtx();
+  askClaude(`[TENDENCIA]\nTendencia: ${trend}${ctx}\n\nDesarrolla una idea de contenido outdoor Chile basada en esta tendencia. Dame: título gancho, formato recomendado, por qué funciona ahora, estructura básica y tip de producción.`, 'trend-out', 'trend-text');
+}
+
+// ── TEMPORADA ─────────────────────────────────
+const seasons = {
+  otono: { label: 'Otoño (mar–may)', desc: 'Colores en la cordillera. Últimas salidas antes del frío. Foco en trekkings de baja/media dificultad y equipo de transición.', ideas: ['Colores del otoño en [ruta]','Equipo para las primeras noches frías','Las rutas que hay que hacer antes del invierno','Qué cambio en mi mochila para el otoño'], cal: ['R','C','–','F','–','R','–'], calCls: ['sl-r','sl-c','sl-o','sl-f','sl-o','sl-r','sl-o'] },
+  invierno: { label: 'Invierno (jun–ago)', desc: 'Nieve, crampones y raquetas. Contenido de alta especialización y gear invernal. La audiencia está en casa planeando salidas.', ideas: ['Mi primer trekking invernal — lo que nadie te dice','Gear esencial para nieve (lo que realmente usé)','Las 3 rutas de nieve cerca de Santiago','¿Vale la pena el gear ultralight en invierno?'], cal: ['–','C','–','C','–','R','–'], calCls: ['sl-o','sl-c','sl-o','sl-c','sl-o','sl-r','sl-o'] },
+  primavera: { label: 'Primavera (sep–nov)', desc: 'Flores, deshielo y rutas que abren. Alta motivación para empezar temporada. Momento de mayor crecimiento de seguidores.', ideas: ['Las flores del desierto florido — guía','Preparando mi cuerpo para la temporada','Rutas que abren en primavera','Mi gear de primavera vs invierno'], cal: ['R','–','C','–','R','F','R'], calCls: ['sl-r','sl-o','sl-c','sl-o','sl-r','sl-f','sl-r'] },
+  verano: { label: 'Verano (dic–feb)', desc: 'Expediciones largas, calor, Patagonia. Máxima actividad y engagement. Temporada de mayor alcance orgánico.', ideas: ['Mi expedición de N días — resumen completo','Qué llevo para soportar el calor en montaña','Las rutas de verano que menos conoce la gente','Mi equipo patagónico — revisión post-expedición'], cal: ['R','C','R','–','R','F','R'], calCls: ['sl-r','sl-c','sl-r','sl-o','sl-r','sl-f','sl-r'] }
+};
+
+let currentSeason = 'otono';
+const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+function setSeason(s, btn) {
+  currentSeason = s;
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderSeason();
+}
+
+function renderSeason() {
+  const s = seasons[currentSeason];
+  const ideas = s.ideas.map(i => `<div style="display:flex;gap:8px;margin-bottom:7px"><span style="color:var(--accent);flex-shrink:0">→</span><span style="font-size:13px;color:var(--text2)">${i}</span></div>`).join('');
+  document.getElementById('season-info').innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:5px">${s.label}</div><div style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:12px">${s.desc}</div><div style="font-size:11px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:8px">ideas para esta temporada</div>${ideas}`;
+  const grid = document.getElementById('week-cal');
+  grid.innerHTML = days.map((d, i) => `<div class="day-col"><div class="day-hd">${d}</div><div class="day-slot ${s.calCls[i]}">${s.cal[i]}</div></div>`).join('');
+}
+
+function initSeason() { renderSeason(); }
+
+function runTemporada() {
+  const s = seasons[currentSeason];
+  const ctx = getModeCtx();
+  askClaude(`[TEMPORADA]\nTemporada: ${s.label}\nNicho: outdoor / aventura en Chile${ctx}\n\nCrea plan de contenido de 4 semanas. Para cada semana: 3 posts con formato, idea específica, tipo y tip de producción estacional. Al final, 3 recomendaciones estratégicas para esta temporada. Tabla con |.`, 'temp-out', 'temp-text');
+}
+
+// ── ANÁLISIS ──────────────────────────────────
+function saveMetrica() {
+  const title = v('met-titulo');
+  if (!title.trim()) { toast('Agrega un título'); return; }
+  metrics.unshift({ id: Date.now(), title, views: v('met-views'), likes: v('met-likes'), cmts: v('met-cmts'), saves: v('met-saves'), date: new Date().toLocaleDateString('es-CL') });
+  persist();
+  ['met-titulo','met-views','met-likes','met-cmts','met-saves'].forEach(id => { document.getElementById(id).value = ''; });
+  renderMetrics();
+  toast('Métrica guardada');
+}
+
+function renderMetrics() {
+  const el = document.getElementById('metrics-display');
+  if (!el) return;
+  if (metrics.length === 0) { el.innerHTML = '<div class="card-title">Métricas guardadas</div><div class="empty">Sin métricas todavía</div>'; return; }
+  const rows = metrics.slice(0, 6).map(m => `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${m.title}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${m.date} · ${m.views||'–'} views · ${m.likes||'–'} likes · ${m.saves||'–'} guardados</div>
+      </div>
+      <button class="btn-danger btn" onclick="deleteMet(${m.id})">✕</button>
+    </div>`).join('');
+  el.innerHTML = `<div class="card-title">Métricas guardadas</div>${rows}`;
+}
+
+function deleteMet(id) { metrics = metrics.filter(m => m.id !== id); persist(); renderMetrics(); }
+
+function runAnalisis() {
+  const tipo = v('anal-tipo'), ctx2 = v('anal-ctx');
+  const ctx = getModeCtx();
+  const mets = metrics.slice(0, 8).map(m => `${m.title}: ${m.views} views, ${m.likes} likes, ${m.cmts} cmts, ${m.saves} guardados`).join(' | ');
+  askClaude(`[ANÁLISIS]\nTipo: ${tipo}${mets ? '\nMétricas guardadas: ' + mets : ''}${ctx2 ? '\nContexto extra: ' + ctx2 : ''}${ctx}\n\nAnaliza y responde: qué está funcionando, qué no, qué repetir y escalar, qué cambiar. 3 recomendaciones concretas para los próximos 30 días. Si no hay datos, da benchmarks para cuentas outdoor Chile <50k.`, 'anal-out', 'anal-text');
+}
+
+// ── PROYECTOS ─────────────────────────────────
+const statusColors = { idea: 'var(--blue)', progreso: 'var(--amber)', listo: 'var(--accent)', publicado: 'var(--text3)' };
+
+function addProj() {
+  const title = v('new-proj'), fmt = v('new-proj-fmt');
+  if (!title.trim()) { toast('Escribe una idea'); return; }
+  projects.unshift({ id: Date.now(), title, fmt, status: 'idea', date: new Date().toLocaleDateString('es-CL') });
+  persist(); renderProjects();
+  document.getElementById('new-proj').value = '';
+  toast('Proyecto agregado');
+}
+
+function renderProjects() {
+  const list = document.getElementById('proj-list');
+  const sel = document.getElementById('proj-sel');
+  if (!list) return;
+  if (projects.length === 0) {
+    list.innerHTML = '<div class="empty">Sin proyectos todavía. Agrega ideas arriba o desde el Flujo rápido.</div>';
+    if (sel) sel.innerHTML = '<option value="">— sin proyectos —</option>';
+    return;
+  }
+  list.innerHTML = projects.map(p => `
+    <div class="proj-row">
+      <div class="proj-dot" style="background:${statusColors[p.status]||statusColors.idea}"></div>
+      <div class="proj-info">
+        <div class="proj-title">${p.title}</div>
+        <div class="proj-meta">${p.fmt} · ${p.date}</div>
+      </div>
+      <select onchange="updateProj(${p.id},this.value)" style="width:auto;padding:4px 8px;font-size:11px;font-family:'DM Mono',monospace">
+        <option value="idea" ${p.status==='idea'?'selected':''}>idea</option>
+        <option value="progreso" ${p.status==='progreso'?'selected':''}>progreso</option>
+        <option value="listo" ${p.status==='listo'?'selected':''}>listo</option>
+        <option value="publicado" ${p.status==='publicado'?'selected':''}>publicado</option>
+      </select>
+      <button class="btn btn-danger" onclick="deleteProj(${p.id})">✕</button>
+    </div>`).join('');
+  if (sel) sel.innerHTML = '<option value="">— selecciona —</option>' + projects.filter(p => p.status !== 'publicado').map(p => `<option value="${p.id}">${p.title} (${p.fmt})</option>`).join('');
+}
+
+function updateProj(id, status) {
+  const p = projects.find(x => x.id === id);
+  if (p) { p.status = status; persist(); renderProjects(); }
+}
+
+function deleteProj(id) { projects = projects.filter(x => x.id !== id); persist(); renderProjects(); }
+
+function runProyecto() {
+  const id = parseInt(v('proj-sel'));
+  if (!id) { toast('Selecciona un proyecto'); return; }
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  const ctx = getModeCtx();
+  askClaude(`[FLUJO COMPLETO]\nFormato: ${p.fmt}\nIdea: ${p.title}${ctx}\n\nGenera TODO:\n1. HOOK — 3 opciones\n2. GUIÓN completo\n3. PLAN DE TOMAS máx 8\n4. CAPTION listo para publicar\n5. HASHTAGS — 3 grupos\n\nSepara secciones con: ---`, 'proj-out', 'proj-text');
+}
+
+// ── FORMATOS ──────────────────────────────────
+function showFmtDetail(fmt, desc) {
+  const el = document.getElementById('fmt-detail');
+  el.style.display = 'block';
+  el.innerHTML = `<strong style="color:var(--text)">${fmt}</strong> — ${desc}`;
+}
+
+// ── BOOT ──────────────────────────────────────
+init();
+</script>
+</body>
+</html>
