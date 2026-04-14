@@ -222,15 +222,54 @@ a:hover { text-decoration: underline; }
 
 <div class="toast" id="toast"></div>
 
+<!-- PROFILE SELECT SCREEN -->
+<div id="profile-screen" style="display:none; min-height:100vh; padding:2rem; display:flex; align-items:flex-start; justify-content:flex-start;">
+  <div style="width:100%; max-width:520px;">
+    <div style="font-size:13px;font-weight:500;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:4px">Contenido RRSS</div>
+    <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:6px">¿Quién eres?</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem">Cada perfil tiene su propio nicho, proyectos y métricas guardados.</div>
+    <div id="profile-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem"></div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;display:flex;gap:8px" onclick="showNewProfile()">+ Crear nuevo perfil</button>
+    <div id="new-profile-form" style="display:none;margin-top:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem">
+      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px">Nuevo perfil</div>
+      <label class="lbl" style="margin-top:0">Nombre</label>
+      <input type="text" id="np-name" placeholder="ej: Daniel, María, Rodrigo...">
+      <label class="lbl">Tu nicho principal</label>
+      <input type="text" id="np-nicho" placeholder="ej: outdoor, fitness, gastronomía...">
+      <label class="lbl">Avatar (emoji)</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="emoji-picker">
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🧗')">🧗</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🏋️')">🏋️</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🍳')">🍳</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'✈️')">✈️</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'💻')">💻</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'👗')">👗</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'📈')">📈</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'📸')">📸</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🎵')">🎵</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🌱')">🌱</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'⚽')">⚽</span>
+        <span style="font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:1px solid var(--border)" onclick="pickEmoji(this,'🎨')">🎨</span>
+      </div>
+      <input type="hidden" id="np-emoji" value="🧗">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="createProfile()">Crear perfil</button>
+        <button class="btn btn-ghost" onclick="hideNewProfile()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- API KEY SETUP SCREEN -->
 <div id="setup-screen" class="apikey-screen on" style="padding:2rem">
   <div class="setup-card">
-    <div class="setup-title">Configurar tu agente</div>
-    <div class="setup-sub">Para que la IA funcione necesitas una API key de Anthropic. Solo se configura una vez y se guarda en tu navegador.</div>
+    <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Configuración inicial</div>
+    <div class="setup-title">API Key de Anthropic</div>
+    <div class="setup-sub">Se configura una sola vez y funciona para todos los perfiles.</div>
     <ul class="step-list">
       <li><span class="step-n">01</span><span>Ve a <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> y crea una cuenta gratis</span></li>
       <li><span class="step-n">02</span><span>En el menú izquierdo haz clic en <strong style="color:var(--text)">API Keys</strong></span></li>
-      <li><span class="step-n">03</span><span>Haz clic en <strong style="color:var(--text)">Create Key</strong>, copia la clave que empieza con <code>sk-ant-</code></span></li>
+      <li><span class="step-n">03</span><span>Clic en <strong style="color:var(--text)">Create Key</strong>, copia la clave que empieza con <code>sk-ant-</code></span></li>
       <li><span class="step-n">04</span><span>Pégala aquí abajo y haz clic en Guardar</span></li>
     </ul>
     <label class="lbl">Tu API Key</label>
@@ -238,7 +277,7 @@ a:hover { text-decoration: underline; }
     <div class="btn-row">
       <button class="btn btn-primary" onclick="saveApiKey()">Guardar y continuar</button>
     </div>
-    <p class="key-note">Tu clave se guarda solo en tu navegador (localStorage). No se envía a ningún servidor externo excepto a Anthropic directamente. Costo estimado: ~$1–5 USD/mes con uso normal.</p>
+    <p class="key-note">Tu clave se guarda solo en este navegador. Costo estimado: ~$1–5 USD/mes con uso normal entre todos los perfiles.</p>
   </div>
 </div>
 
@@ -246,7 +285,10 @@ a:hover { text-decoration: underline; }
 <div id="app" class="shell" style="display:none">
   <div class="sidebar">
     <div class="logo">
-      <div class="logo-title">Daniel RRSS</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span id="sidebar-emoji" style="font-size:18px;line-height:1">🧗</span>
+        <div class="logo-title" id="sidebar-name">Daniel RRSS</div>
+      </div>
       <div class="logo-sub" id="sidebar-nicho">instagram · contenido</div>
     </div>
     <div class="nav-item on" onclick="nav('flujo',this)"><div class="nav-dot"></div>Flujo rápido</div>
@@ -256,9 +298,9 @@ a:hover { text-decoration: underline; }
     <div class="nav-item" onclick="nav('analisis',this)"><div class="nav-dot"></div>Análisis</div>
     <div class="nav-item" onclick="nav('proyectos',this)"><div class="nav-dot"></div>Proyectos</div>
     <div class="nav-item" onclick="nav('formatos',this)"><div class="nav-dot"></div>Formatos IG</div>
-    <div style="margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px">api key</div>
-      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;width:100%" onclick="resetKey()">Cambiar key</button>
+    <div style="margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px">
+      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;width:100%;text-align:left" onclick="switchProfile()">⇄ Cambiar perfil</button>
+      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;width:100%;text-align:left" onclick="resetKey()">⚙ Cambiar API key</button>
     </div>
   </div>
 
@@ -540,19 +582,137 @@ a:hover { text-decoration: underline; }
 // ── STATE ──────────────────────────────────────
 let apiKey = localStorage.getItem('daniel-api-key') || '';
 let currentMode = 'personal';
-let currentNicho = localStorage.getItem('daniel-nicho') || 'outdoor / aventura';
+let currentNicho = 'outdoor / aventura';
+let currentProfile = null;
 let projects = [];
 let metrics = [];
 
+// ── PROFILE SYSTEM ────────────────────────────
+function getProfiles() {
+  try { return JSON.parse(localStorage.getItem('daniel-profiles') || '[]'); } catch(e) { return []; }
+}
+function saveProfiles(ps) { localStorage.setItem('daniel-profiles', JSON.stringify(ps)); }
+
 function init() {
-  if (apiKey) {
-    document.getElementById('setup-screen').classList.remove('on');
-    document.getElementById('app').style.display = 'flex';
-    loadData();
-    initSeason();
-    applyNicho(currentNicho);
-    updateDurOptions();
+  if (!apiKey) {
+    showScreen('setup-screen');
+    return;
   }
+  const profiles = getProfiles();
+  if (profiles.length === 0) {
+    showScreen('profile-screen');
+    renderProfileList();
+    return;
+  }
+  // auto-login if only one profile or last used
+  const lastId = localStorage.getItem('daniel-last-profile');
+  const last = profiles.find(p => p.id === lastId);
+  if (last) { loginProfile(last); return; }
+  showScreen('profile-screen');
+  renderProfileList();
+}
+
+function showScreen(id) {
+  ['setup-screen','profile-screen','app'].forEach(s => {
+    const el = document.getElementById(s);
+    if (!el) return;
+    if (s === 'app') el.style.display = s === id ? 'flex' : 'none';
+    else { el.style.display = s === id ? 'flex' : 'none'; if(s===id && s!=='app') el.style.flexDirection='column'; }
+  });
+  // profile-screen needs flex
+  if (id === 'profile-screen') {
+    const ps = document.getElementById('profile-screen');
+    if (ps) { ps.style.display = 'flex'; ps.style.alignItems = 'flex-start'; }
+  }
+}
+
+function renderProfileList() {
+  const profiles = getProfiles();
+  const list = document.getElementById('profile-list');
+  if (!list) return;
+  if (profiles.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:1rem 0">No hay perfiles todavía. Crea el primero.</div>';
+    return;
+  }
+  list.innerHTML = profiles.map(p => `
+    <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(200,240,96,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'" onclick="loginProfile(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div style="width:42px;height:42px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${p.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:500;color:var(--text)">${p.name}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${p.nicho}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;align-self:center">${(JSON.parse(localStorage.getItem('daniel-projects-'+p.id)||'[]')).length} proyectos</div>
+        <button onclick="event.stopPropagation();deleteProfile('${p.id}')" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px" title="Eliminar perfil">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function loginProfile(p) {
+  currentProfile = p;
+  localStorage.setItem('daniel-last-profile', p.id);
+  currentNicho = p.nicho;
+  showScreen('app');
+  // update sidebar
+  const seName = document.getElementById('sidebar-name');
+  const seEmoji = document.getElementById('sidebar-emoji');
+  if (seName) seName.textContent = p.name;
+  if (seEmoji) seEmoji.textContent = p.emoji;
+  loadData();
+  initSeason();
+  applyNicho(currentNicho);
+  updateDurOptions();
+  // reset nav to flujo
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('on'));
+  const flujoSec = document.getElementById('sec-flujo');
+  if (flujoSec) flujoSec.classList.add('on');
+  const firstNav = document.querySelector('.nav-item');
+  if (firstNav) firstNav.classList.add('on');
+}
+
+function switchProfile() {
+  currentProfile = null;
+  localStorage.removeItem('daniel-last-profile');
+  showScreen('profile-screen');
+  renderProfileList();
+}
+
+let selectedEmoji = '🧗';
+function pickEmoji(el, emoji) {
+  selectedEmoji = emoji;
+  document.getElementById('np-emoji').value = emoji;
+  document.querySelectorAll('#emoji-picker span').forEach(s => s.style.background = 'transparent');
+  el.style.background = 'var(--accent-dim)';
+}
+
+function showNewProfile() { document.getElementById('new-profile-form').style.display = 'block'; }
+function hideNewProfile() { document.getElementById('new-profile-form').style.display = 'none'; }
+
+function createProfile() {
+  const name = document.getElementById('np-name').value.trim();
+  const nicho = document.getElementById('np-nicho').value.trim();
+  const emoji = document.getElementById('np-emoji').value || '🧗';
+  if (!name) { toast('Escribe un nombre'); return; }
+  if (!nicho) { toast('Escribe tu nicho'); return; }
+  const profiles = getProfiles();
+  const newP = { id: 'p-' + Date.now(), name, nicho, emoji };
+  profiles.push(newP);
+  saveProfiles(profiles);
+  document.getElementById('np-name').value = '';
+  document.getElementById('np-nicho').value = '';
+  hideNewProfile();
+  loginProfile(newP);
+}
+
+function deleteProfile(id) {
+  if (!confirm('¿Eliminar este perfil y todos sus datos?')) return;
+  const profiles = getProfiles().filter(p => p.id !== id);
+  saveProfiles(profiles);
+  localStorage.removeItem('daniel-projects-' + id);
+  localStorage.removeItem('daniel-metrics-' + id);
+  if (localStorage.getItem('daniel-last-profile') === id) localStorage.removeItem('daniel-last-profile');
+  renderProfileList();
 }
 
 function saveApiKey() {
@@ -560,23 +720,25 @@ function saveApiKey() {
   if (!k.startsWith('sk-')) { toast('La key debe empezar con sk-ant-'); return; }
   localStorage.setItem('daniel-api-key', k);
   apiKey = k;
-  document.getElementById('setup-screen').classList.remove('on');
-  document.getElementById('app').style.display = 'flex';
-  loadData();
-  initSeason();
+  const profiles = getProfiles();
+  if (profiles.length === 0) { showScreen('profile-screen'); renderProfileList(); }
+  else { showScreen('profile-screen'); renderProfileList(); }
 }
 
 function resetKey() {
   localStorage.removeItem('daniel-api-key');
   apiKey = '';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('setup-screen').classList.add('on');
+  showScreen('setup-screen');
 }
 
 // ── NICHO ─────────────────────────────────────
 function applyNicho(nicho) {
   currentNicho = nicho;
-  localStorage.setItem('daniel-nicho', nicho);
+  if (currentProfile) {
+    const profiles = getProfiles();
+    const p = profiles.find(x => x.id === currentProfile.id);
+    if (p) { p.nicho = nicho; saveProfiles(profiles); currentProfile.nicho = nicho; }
+  }
   const inp = document.getElementById('nicho-input');
   if (inp) inp.value = nicho;
   const sn = document.getElementById('sidebar-nicho');
@@ -597,7 +759,11 @@ function setNicho(nicho, btn) {
 function updateNicho(val) {
   if (val.trim()) {
     currentNicho = val.trim();
-    localStorage.setItem('daniel-nicho', currentNicho);
+    if (currentProfile) {
+      const profiles = getProfiles();
+      const p = profiles.find(x => x.id === currentProfile.id);
+      if (p) { p.nicho = currentNicho; saveProfiles(profiles); currentProfile.nicho = currentNicho; }
+    }
     document.querySelectorAll('.np').forEach(b => b.classList.remove('on'));
     const sn = document.getElementById('sidebar-nicho');
     if (sn) sn.textContent = currentNicho.split('/')[0].trim().toLowerCase();
@@ -626,7 +792,8 @@ function downloadOutput(textId, filename) {
   if (!el || !el.textContent.trim()) { toast('Genera contenido primero'); return; }
   const date = new Date().toLocaleDateString('es-CL').replace(/\//g, '-');
   const nicho = currentNicho.split('/')[0].trim().toLowerCase().replace(/\s+/g, '-');
-  const fullName = `${filename}-${nicho}-${date}.txt`;
+  const pname = currentProfile ? currentProfile.name.toLowerCase().replace(/\s+/g,'-') + '-' : '';
+  const fullName = `${pname}${filename}-${nicho}-${date}.txt`;
   const blob = new Blob([el.textContent], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -638,16 +805,18 @@ function downloadOutput(textId, filename) {
 }
 
 // ── DATA PERSISTENCE ───────────────────────────
+function profileKey(k) { return currentProfile ? k + '-' + currentProfile.id : k; }
+
 function loadData() {
-  try { projects = JSON.parse(localStorage.getItem('daniel-projects') || '[]'); } catch(e) { projects = []; }
-  try { metrics = JSON.parse(localStorage.getItem('daniel-metrics') || '[]'); } catch(e) { metrics = []; }
+  try { projects = JSON.parse(localStorage.getItem(profileKey('daniel-projects')) || '[]'); } catch(e) { projects = []; }
+  try { metrics = JSON.parse(localStorage.getItem(profileKey('daniel-metrics')) || '[]'); } catch(e) { metrics = []; }
   renderProjects();
   renderMetrics();
 }
 
 function persist() {
-  localStorage.setItem('daniel-projects', JSON.stringify(projects));
-  localStorage.setItem('daniel-metrics', JSON.stringify(metrics));
+  localStorage.setItem(profileKey('daniel-projects'), JSON.stringify(projects));
+  localStorage.setItem(profileKey('daniel-metrics'), JSON.stringify(metrics));
 }
 
 // ── NAV ────────────────────────────────────────
