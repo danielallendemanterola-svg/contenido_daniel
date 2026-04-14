@@ -31,6 +31,22 @@
 body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 code, .mono { font-family: 'DM Mono', monospace; }
 
+/* NICHO PROFILE BAR */
+.nicho-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.nicho-bar-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); white-space: nowrap; }
+.nicho-bar input { flex: 1; min-width: 160px; padding: 6px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; }
+.nicho-bar input:focus { border-color: var(--border2); }
+.nicho-presets { display: flex; gap: 5px; flex-wrap: wrap; }
+.np { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); color: var(--text2); background: transparent; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+.np:hover, .np.on { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,96,.3); }
+
+/* OUTPUT ACTIONS */
+.out-actions { display: flex; gap: 8px; margin-top: 10px; }
+.out-action-btn { padding: 6px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: transparent; color: var(--text2); font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .05em; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+.out-action-btn:hover { color: var(--text); background: var(--bg3); border-color: var(--border2); }
+.out-action-btn.accent { border-color: rgba(200,240,96,.3); color: var(--accent); }
+.out-action-btn.accent:hover { background: var(--accent-dim); }
+
 /* LAYOUT */
 .shell { display: flex; min-height: 100vh; }
 .sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
@@ -231,7 +247,7 @@ a:hover { text-decoration: underline; }
   <div class="sidebar">
     <div class="logo">
       <div class="logo-title">Daniel RRSS</div>
-      <div class="logo-sub">outdoor · instagram</div>
+      <div class="logo-sub" id="sidebar-nicho">instagram · contenido</div>
     </div>
     <div class="nav-item on" onclick="nav('flujo',this)"><div class="nav-dot"></div>Flujo rápido</div>
     <div class="nav-item" onclick="nav('caption',this)"><div class="nav-dot"></div>Caption + hashtags</div>
@@ -266,6 +282,24 @@ a:hover { text-decoration: underline; }
       </div>
     </div>
 
+    <!-- NICHO PROFILE -->
+    <div class="nicho-bar">
+      <span class="nicho-bar-label">Nicho</span>
+      <input type="text" id="nicho-input" placeholder="Escribe tu nicho o temática..." oninput="updateNicho(this.value)">
+      <div class="nicho-presets">
+        <button class="np on" onclick="setNicho('outdoor / aventura',this)">Outdoor</button>
+        <button class="np" onclick="setNicho('fitness y entrenamiento',this)">Fitness</button>
+        <button class="np" onclick="setNicho('gastronomía y cocina',this)">Gastronomía</button>
+        <button class="np" onclick="setNicho('viajes y turismo',this)">Viajes</button>
+        <button class="np" onclick="setNicho('tecnología y gadgets',this)">Tech</button>
+        <button class="np" onclick="setNicho('moda y estilo de vida',this)">Moda</button>
+        <button class="np" onclick="setNicho('negocios y emprendimiento',this)">Negocios</button>
+        <button class="np" onclick="setNicho('fotografía y arte visual',this)">Foto/Arte</button>
+        <button class="np" onclick="setNicho('música',this)">Música</button>
+        <button class="np" onclick="setNicho('educación y desarrollo personal',this)">Educación</button>
+      </div>
+    </div>
+
     <div class="extra-box" id="brand-box">
       <div class="card-title">Datos de la marca</div>
       <label class="lbl">Marca / producto</label><input type="text" id="brand-name" placeholder="ej: Lippi, Black Diamond, Salomon...">
@@ -289,13 +323,24 @@ a:hover { text-decoration: underline; }
       <div class="card">
         <div class="card-title">Tu idea</div>
         <label class="lbl">Formato</label>
-        <select id="fl-fmt"><option>Reels</option><option>Carrusel</option><option>Foto + caption</option><option>Stories en secuencia</option></select>
+        <select id="fl-fmt" onchange="updateDurOptions()">
+          <option value="Reels">Reels</option>
+          <option value="Carrusel">Carrusel</option>
+          <option value="Foto + caption">Foto + caption</option>
+          <option value="Stories en secuencia">Stories en secuencia</option>
+          <option value="Live">Live</option>
+        </select>
         <label class="lbl">Idea en una línea</label>
         <input type="text" id="fl-idea" placeholder="ej: dormí 3 noches en la cordillera con equipo ultralight...">
         <label class="lbl">Tono</label>
         <select id="fl-tone"><option>Aventurero / épico</option><option>Educativo / práctico</option><option>Personal / storytelling</option><option>Motivacional</option><option>Casual / humor</option></select>
-        <label class="lbl">Duración / extensión</label>
-        <select id="fl-dur"><option>15–30 seg</option><option>30–60 seg</option><option>60–90 seg</option><option>Carrusel 6–8 slides</option><option>Carrusel 10 slides</option></select>
+        <label class="lbl" id="fl-dur-label">Duración</label>
+        <select id="fl-dur">
+          <option>15–30 segundos</option>
+          <option>30–60 segundos</option>
+          <option>60–90 segundos</option>
+        </select>
+        <div id="fl-dur-hint" style="font-size:11px;color:var(--text3);margin-top:4px;font-family:'DM Mono',monospace;"></div>
         <div class="btn-row">
           <button class="btn btn-primary" onclick="runFlujo('completo')">Generar todo ↗</button>
           <button class="btn btn-ghost" onclick="runFlujo('hooks')">Solo hooks</button>
@@ -307,6 +352,10 @@ a:hover { text-decoration: underline; }
       <div id="flujo-out" class="chat-box">
         <span class="chat-label">respuesta del agente</span>
         <div id="flujo-text"></div>
+        <div class="out-actions">
+          <button class="out-action-btn accent" onclick="copyOutput('flujo-text')">↗ Copiar</button>
+          <button class="out-action-btn" onclick="downloadOutput('flujo-text','contenido-flujo')">↓ Descargar .txt</button>
+        </div>
       </div>
     </div>
 
@@ -318,42 +367,37 @@ a:hover { text-decoration: underline; }
         <label class="lbl">Formato del post</label>
         <select id="cap-fmt"><option>Reel</option><option>Carrusel</option><option>Foto estática</option><option>Story</option></select>
         <label class="lbl">¿De qué trata?</label>
-        <textarea id="cap-topic" placeholder="ej: reel sobre mi primer trekking invernal en El Morado, equipo usado, aprendizajes..."></textarea>
+        <textarea id="cap-topic" placeholder="describe el contenido de tu post..."></textarea>
         <label class="lbl">Longitud</label>
         <select id="cap-len"><option>Corto (1–3 líneas)</option><option>Medio (4–8 líneas)</option><option>Largo con storytelling (10+ líneas)</option></select>
         <label class="lbl">CTA</label>
-        <select id="cap-cta"><option>Comenta tu experiencia</option><option>Guarda para tu próxima salida</option><option>Etiqueta a alguien</option><option>Seguir para más contenido</option><option>Link en bio</option><option>Sin CTA</option></select>
+        <select id="cap-cta"><option>Comenta tu experiencia</option><option>Guarda para después</option><option>Etiqueta a alguien</option><option>Seguir para más contenido</option><option>Link en bio</option><option>Sin CTA</option></select>
         <div class="btn-row"><button class="btn btn-primary" onclick="runCaption()">Generar caption + hashtags ↗</button></div>
       </div>
       <div class="card">
-        <div class="card-title">Banco de hashtags outdoor Chile</div>
-        <div class="ht-group">
-          <div class="ht-group-label">Nicho — alta relevancia</div>
-          <span class="tag tag-green">#outdoorchile</span><span class="tag tag-green">#trekkinchile</span><span class="tag tag-green">#montañachile</span><span class="tag tag-green">#senderismochile</span><span class="tag tag-green">#cordilleradelosandes</span><span class="tag tag-green">#patagoniachile</span>
-        </div>
-        <div class="ht-group">
-          <div class="ht-group-label">Medio — equilibrio alcance/relevancia</div>
-          <span class="tag tag-blue">#outdoor</span><span class="tag tag-blue">#hiking</span><span class="tag tag-blue">#trekking</span><span class="tag tag-blue">#adventure</span><span class="tag tag-blue">#ultralight</span><span class="tag tag-blue">#hikingadventures</span><span class="tag tag-blue">#backpacking</span>
-        </div>
-        <div class="ht-group">
-          <div class="ht-group-label">Masivo — mayor alcance</div>
-          <span class="tag tag-amber">#nature</span><span class="tag tag-amber">#travel</span><span class="tag tag-amber">#explore</span><span class="tag tag-amber">#mountains</span><span class="tag tag-amber">#adventure</span>
+        <div class="card-title" id="ht-bank-title">Banco de hashtags</div>
+        <div id="ht-bank-content">
+          <div class="ht-group"><div class="ht-group-label">Nicho — alta relevancia</div><span class="tag tag-green">#outdoorchile</span><span class="tag tag-green">#trekkinchile</span><span class="tag tag-green">#montañachile</span><span class="tag tag-green">#senderismochile</span><span class="tag tag-green">#cordilleradelosandes</span></div>
+          <div class="ht-group"><div class="ht-group-label">Medio</div><span class="tag tag-blue">#outdoor</span><span class="tag tag-blue">#hiking</span><span class="tag tag-blue">#trekking</span><span class="tag tag-blue">#adventure</span><span class="tag tag-blue">#ultralight</span></div>
+          <div class="ht-group"><div class="ht-group-label">Masivo</div><span class="tag tag-amber">#nature</span><span class="tag tag-amber">#travel</span><span class="tag tag-amber">#explore</span><span class="tag tag-amber">#mountains</span></div>
         </div>
       </div>
-      <div id="caption-out" class="chat-box"><span class="chat-label">caption generado</span><div id="caption-text"></div></div>
+      <div id="caption-out" class="chat-box"><span class="chat-label">caption generado</span><div id="caption-text"></div><div class="out-actions"><button class="out-action-btn accent" onclick="copyOutput('caption-text')">↗ Copiar</button><button class="out-action-btn" onclick="downloadOutput('caption-text','caption')">↓ Descargar .txt</button></div></div>
     </div>
 
     <!-- TENDENCIAS -->
     <div id="sec-tendencias" class="sec">
-      <div class="page-hd"><h2>Tendencias</h2><p>Formatos virales actuales para contenido outdoor</p></div>
+      <div class="page-hd"><h2>Tendencias</h2><p id="trend-page-sub">Formatos virales activos para tu nicho</p></div>
       <div class="card">
-        <div class="card-title">Tendencias activas</div>
-        <div class="trend-item"><div class="trend-n">01</div><div><div class="trend-t">POV: soy el que sobreempaca vs ultralight</div><div class="trend-d">Comparación con humor. Alto engagement en comunidades outdoor. Funciona como Reel o Carrusel.</div><span class="trend-cta" onclick="injectTrend('POV: soy el que sobreempaca vs la persona ultralight')">→ usar esta idea</span></div></div>
-        <div class="trend-item"><div class="trend-n">02</div><div><div class="trend-t">Rating honesto de gear después de usarlo de verdad</div><div class="trend-d">Reviews post-uso real generan confianza. Carrusel con foto de cada ítem y nota del 1 al 10.</div><span class="trend-cta" onclick="injectTrend('rating honesto de gear después de usarlo de verdad en terreno')">→ usar esta idea</span></div></div>
-        <div class="trend-item"><div class="trend-n">03</div><div><div class="trend-t">Lo que nadie muestra del outdoor en IG</div><div class="trend-d">Romper la narrativa perfecta — ampollas, lluvia, errores. Alto engagement emocional.</div><span class="trend-cta" onclick="injectTrend('lo que nadie muestra del outdoor en Instagram — la realidad sin filtros')">→ usar esta idea</span></div></div>
-        <div class="trend-item"><div class="trend-n">04</div><div><div class="trend-t">Pack conmigo para [destino]</div><div class="trend-d">Formato "get ready with me" outdoor. Muy buscado, alta retención, funciona con cualquier ruta.</div><span class="trend-cta" onclick="injectTrend('pack conmigo para trekking de 3 días en la cordillera')">→ usar esta idea</span></div></div>
-        <div class="trend-item"><div class="trend-n">05</div><div><div class="trend-t">El spot que descubrí a 2h de Santiago</div><div class="trend-d">Contenido hiperlocal de alto valor. Los guardados explotan porque la audiencia quiere ir.</div><span class="trend-cta" onclick="injectTrend('el spot que descubrí a 2 horas de Santiago que casi nadie conoce')">→ usar esta idea</span></div></div>
-        <div class="trend-item"><div class="trend-n">06</div><div><div class="trend-t">Cuánto gasté en [ruta] — desglose real</div><div class="trend-d">Transparencia financiera + outdoor = altísimo alcance. Une dos nichos de máximo engagement.</div><span class="trend-cta" onclick="injectTrend('cuánto gasté en mi última ruta de trekking — desglose real y honesto')">→ usar esta idea</span></div></div>
+        <div class="card-title" id="trend-list-title">Tendencias activas</div>
+        <div id="trend-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="ref-title">Creadores de referencia</div>
+        <div id="ref-list"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-ghost" onclick="runCreadores()">Buscar más creadores para mi nicho ↗</button>
+        </div>
       </div>
       <div class="card">
         <div class="card-title">Desarrollar idea trending</div>
@@ -361,7 +405,7 @@ a:hover { text-decoration: underline; }
         <input type="text" id="trend-input" placeholder="ej: POV, antes vs después, rating honesto, pack conmigo...">
         <div class="btn-row"><button class="btn btn-primary" onclick="runTrend()">Desarrollar ↗</button></div>
       </div>
-      <div id="trend-out" class="chat-box"><span class="chat-label">idea desarrollada</span><div id="trend-text"></div></div>
+      <div id="trend-out" class="chat-box"><span class="chat-label">idea desarrollada</span><div id="trend-text"></div><div class="out-actions"><button class="out-action-btn accent" onclick="copyOutput('trend-text')">↗ Copiar</button><button class="out-action-btn" onclick="downloadOutput('trend-text','tendencia')">↓ Descargar .txt</button></div></div>
     </div>
 
     <!-- TEMPORADA -->
@@ -388,7 +432,7 @@ a:hover { text-decoration: underline; }
           <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace"><span style="width:8px;height:8px;border-radius:2px;background:rgba(240,168,64,.25);display:inline-block"></span>story</span>
         </div>
       </div>
-      <div id="temp-out" class="chat-box"><span class="chat-label">plan generado</span><div id="temp-text"></div></div>
+      <div id="temp-out" class="chat-box"><span class="chat-label">plan generado</span><div id="temp-text"></div><div class="out-actions"><button class="out-action-btn accent" onclick="copyOutput('temp-text')">↗ Copiar</button><button class="out-action-btn" onclick="downloadOutput('temp-text','plan-temporada')">↓ Descargar .txt</button></div></div>
     </div>
 
     <!-- ANÁLISIS -->
@@ -428,7 +472,7 @@ a:hover { text-decoration: underline; }
         <div class="perf-row"><div class="perf-label">Foto</div><div class="perf-track"><div class="perf-fill" style="width:50%;background:var(--accent)"></div></div><div class="perf-val">likes</div></div>
         <div class="perf-row"><div class="perf-label">Stories</div><div class="perf-track"><div class="perf-fill" style="width:62%;background:var(--amber)"></div></div><div class="perf-val">replies</div></div>
       </div>
-      <div id="anal-out" class="chat-box"><span class="chat-label">análisis</span><div id="anal-text"></div></div>
+      <div id="anal-out" class="chat-box"><span class="chat-label">análisis</span><div id="anal-text"></div><div class="out-actions"><button class="out-action-btn accent" onclick="copyOutput('anal-text')">↗ Copiar</button><button class="out-action-btn" onclick="downloadOutput('anal-text','analisis')">↓ Descargar .txt</button></div></div>
     </div>
 
     <!-- PROYECTOS -->
@@ -458,7 +502,7 @@ a:hover { text-decoration: underline; }
         <select id="proj-sel"><option value="">— selecciona —</option></select>
         <div class="btn-row"><button class="btn btn-primary" onclick="runProyecto()">Generar contenido completo ↗</button></div>
       </div>
-      <div id="proj-out" class="chat-box"><span class="chat-label">contenido generado</span><div id="proj-text"></div></div>
+      <div id="proj-out" class="chat-box"><span class="chat-label">contenido generado</span><div id="proj-text"></div><div class="out-actions"><button class="out-action-btn accent" onclick="copyOutput('proj-text')">↗ Copiar</button><button class="out-action-btn" onclick="downloadOutput('proj-text','proyecto')">↓ Descargar .txt</button></div></div>
     </div>
 
     <!-- FORMATOS IG -->
@@ -496,6 +540,7 @@ a:hover { text-decoration: underline; }
 // ── STATE ──────────────────────────────────────
 let apiKey = localStorage.getItem('daniel-api-key') || '';
 let currentMode = 'personal';
+let currentNicho = localStorage.getItem('daniel-nicho') || 'outdoor / aventura';
 let projects = [];
 let metrics = [];
 
@@ -505,6 +550,8 @@ function init() {
     document.getElementById('app').style.display = 'flex';
     loadData();
     initSeason();
+    applyNicho(currentNicho);
+    updateDurOptions();
   }
 }
 
@@ -524,6 +571,70 @@ function resetKey() {
   apiKey = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('setup-screen').classList.add('on');
+}
+
+// ── NICHO ─────────────────────────────────────
+function applyNicho(nicho) {
+  currentNicho = nicho;
+  localStorage.setItem('daniel-nicho', nicho);
+  const inp = document.getElementById('nicho-input');
+  if (inp) inp.value = nicho;
+  const sn = document.getElementById('sidebar-nicho');
+  if (sn) sn.textContent = nicho.split('/')[0].trim().toLowerCase();
+  document.querySelectorAll('.np').forEach(btn => {
+    btn.classList.toggle('on', btn.onclick?.toString().includes(nicho));
+  });
+  renderTrends();
+  renderCreadores();
+}
+
+function setNicho(nicho, btn) {
+  document.querySelectorAll('.np').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  applyNicho(nicho);
+}
+
+function updateNicho(val) {
+  if (val.trim()) {
+    currentNicho = val.trim();
+    localStorage.setItem('daniel-nicho', currentNicho);
+    document.querySelectorAll('.np').forEach(b => b.classList.remove('on'));
+    const sn = document.getElementById('sidebar-nicho');
+    if (sn) sn.textContent = currentNicho.split('/')[0].trim().toLowerCase();
+    renderTrends();
+    renderCreadores();
+  }
+}
+
+// ── DOWNLOAD / COPY ───────────────────────────
+function copyOutput(textId) {
+  const el = document.getElementById(textId);
+  if (!el || !el.textContent.trim()) { toast('Genera contenido primero'); return; }
+  navigator.clipboard.writeText(el.textContent).then(() => toast('Copiado al portapapeles')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = el.textContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Copiado al portapapeles');
+  });
+}
+
+function downloadOutput(textId, filename) {
+  const el = document.getElementById(textId);
+  if (!el || !el.textContent.trim()) { toast('Genera contenido primero'); return; }
+  const date = new Date().toLocaleDateString('es-CL').replace(/\//g, '-');
+  const nicho = currentNicho.split('/')[0].trim().toLowerCase().replace(/\s+/g, '-');
+  const fullName = `${filename}-${nicho}-${date}.txt`;
+  const blob = new Blob([el.textContent], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fullName;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Descargando ' + fullName);
 }
 
 // ── DATA PERSISTENCE ───────────────────────────
@@ -559,7 +670,7 @@ function setMode(el) {
 function getModeCtx() {
   if (currentMode === 'marca') return `\nMODO: Patrocinado\nMarca: ${v('brand-name')||'–'}\nMensaje: ${v('brand-msg')||'–'}\nBrief: ${v('brand-brief')||'–'}\nAcuerdo: ${v('brand-deal')}`;
   if (currentMode === 'ugc') return `\nMODO: UGC para marca\nMarca: ${v('ugc-brand')||'–'}\nUso: ${v('ugc-uso')}\nEntregables: ${v('ugc-entregables')||'–'}\nBrief: ${v('ugc-brief')||'–'}`;
-  return '\nMODO: Contenido propio — outdoor Chile';
+  return `\nMODO: Contenido propio — nicho ${currentNicho}`;
 }
 
 // ── CLAUDE API ────────────────────────────────
@@ -581,7 +692,7 @@ async function askClaude(prompt, outBoxId, textId) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
-        system: 'Eres un experto en creación de contenido viral para Instagram, especializado en outdoor y aventura en Chile. Respondes siempre en español. Eres directo, concreto y sin relleno. Nunca usas asteriscos, markdown, ni formato especial. Solo texto limpio y bien estructurado con números y guiones cuando corresponda.',
+        system: 'Eres un experto en creación de contenido viral para Instagram. Adaptas tu conocimiento a cualquier nicho o temática que te indiquen. Respondes siempre en español. Eres directo, concreto y sin relleno. Nunca usas asteriscos, markdown, ni formato especial. Solo texto limpio y bien estructurado con números y guiones cuando corresponda.',
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -612,13 +723,14 @@ function toast(msg) {
 
 // ── FLUJO RÁPIDO ──────────────────────────────
 function runFlujo(tipo) {
-  const fmt = v('fl-fmt'), idea = v('fl-idea') || 'contenido outdoor', tone = v('fl-tone'), dur = v('fl-dur');
+  const fmt = v('fl-fmt'), idea = v('fl-idea') || ('contenido ' + currentNicho), tone = v('fl-tone'), dur = v('fl-dur');
   const ctx = getModeCtx();
+  const n = currentNicho;
   const prompts = {
-    completo: `[FLUJO COMPLETO]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGenera TODO en este orden:\n1. HOOK — 3 opciones (máx 15 palabras c/u)\n2. GUIÓN — completo con tomas en [corchetes]\n3. PLAN DE TOMAS — máx 8 tomas (número, plano, acción, duración)\n4. CAPTION — listo para publicar con emojis y CTA\n5. HASHTAGS — 3 grupos: nicho Chile, medio, masivo (5 cada uno)\n\nSepara cada sección con: ---`,
-    hooks: `[HOOKS]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}${ctx}\n\nCrea 5 hooks para ${fmt}. Máx 15 palabras. Outdoor Chile. Numerados.`,
-    guion: `[GUIÓN]\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGuión completo: HOOK, DESARROLLO con tomas [entre corchetes], CIERRE + CTA. Outdoor Chile.`,
-    tomas: `[TOMAS]\nFormato: ${fmt}\nIdea: ${idea}${ctx}\n\nPlan de rodaje, máx 8 tomas. Para cada una: número, tipo de plano, qué grabar, duración, nota técnica outdoor.`
+    completo: `[FLUJO COMPLETO]\nNicho: ${n}\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGenera TODO en este orden para el nicho "${n}":\n1. HOOK — 3 opciones (máx 15 palabras c/u)\n2. GUIÓN — completo con tomas en [corchetes]\n3. PLAN DE TOMAS — máx 8 tomas (número, plano, acción, duración)\n4. CAPTION — listo para publicar con emojis y CTA\n5. HASHTAGS — 3 grupos: nicho específico de ${n}, medio, masivo (5 cada uno)\n\nEn español, sin asteriscos. Separa cada sección con: ---`,
+    hooks: `[HOOKS]\nNicho: ${n}\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}${ctx}\n\nCrea 5 hooks para ${fmt} en el nicho de ${n}. Máx 15 palabras. Numerados.`,
+    guion: `[GUIÓN]\nNicho: ${n}\nFormato: ${fmt}\nIdea: ${idea}\nTono: ${tone}\nDuración: ${dur}${ctx}\n\nGuión completo para ${n}: HOOK, DESARROLLO con tomas [entre corchetes], CIERRE + CTA.`,
+    tomas: `[TOMAS]\nNicho: ${n}\nFormato: ${fmt}\nIdea: ${idea}${ctx}\n\nPlan de rodaje para ${n}, máx 8 tomas. Para cada una: número, tipo de plano, qué grabar, duración, nota técnica específica para este tipo de contenido.`
   };
   askClaude(prompts[tipo], 'flujo-out', 'flujo-text');
 }
@@ -634,9 +746,10 @@ function saveIdea() {
 
 // ── CAPTION ───────────────────────────────────
 function runCaption() {
-  const fmt = v('cap-fmt'), topic = v('cap-topic') || 'contenido outdoor', len = v('cap-len'), cta = v('cap-cta');
+  const fmt = v('cap-fmt'), topic = v('cap-topic') || ('contenido de ' + currentNicho), len = v('cap-len'), cta = v('cap-cta');
   const ctx = getModeCtx();
-  askClaude(`[CAPTION + HASHTAGS]\nFormato: ${fmt}\nContenido: ${topic}\nLongitud: ${len}\nCTA: ${cta}${ctx}\n\nGenera:\n1. CAPTION completo listo para copiar (emojis estratégicos, saltos de línea, CTA al final)\n2. SET NICHO: 8 hashtags outdoor Chile específicos\n3. SET MEDIO: 7 hashtags outdoor equilibrados\n4. SET MASIVO: 5 hashtags alto alcance\nMáx 20 hashtags en total.`, 'caption-out', 'caption-text');
+  const n = currentNicho;
+  askClaude(`[CAPTION + HASHTAGS]\nNicho: ${n}\nFormato: ${fmt}\nContenido: ${topic}\nLongitud: ${len}\nCTA: ${cta}${ctx}\n\nGenera:\n1. CAPTION completo listo para copiar (emojis estratégicos acordes al nicho ${n}, saltos de línea naturales, CTA al final)\n2. SET NICHO: 8 hashtags específicos de ${n}\n3. SET MEDIO: 7 hashtags equilibrados de ${n} y afines\n4. SET MASIVO: 5 hashtags de alto alcance general\nMáx 20 hashtags en total. Sin asteriscos.`, 'caption-out', 'caption-text');
 }
 
 // ── TENDENCIAS ────────────────────────────────
@@ -646,9 +759,10 @@ function injectTrend(idea) {
 }
 
 function runTrend() {
-  const trend = v('trend-input') || 'tendencia outdoor';
+  const trend = v('trend-input') || ('tendencia de ' + currentNicho);
   const ctx = getModeCtx();
-  askClaude(`[TENDENCIA]\nTendencia: ${trend}${ctx}\n\nDesarrolla una idea de contenido outdoor Chile basada en esta tendencia. Dame: título gancho, formato recomendado, por qué funciona ahora, estructura básica y tip de producción.`, 'trend-out', 'trend-text');
+  const n = currentNicho;
+  askClaude(`[TENDENCIA]\nNicho: ${n}\nTendencia: ${trend}${ctx}\n\nDesarrolla una idea de contenido de ${n} basada en esta tendencia. Dame: título gancho, formato recomendado para Instagram, por qué funciona ahora en este nicho, estructura básica del contenido y tip de producción específico.`, 'trend-out', 'trend-text');
 }
 
 // ── TEMPORADA ─────────────────────────────────
@@ -682,7 +796,8 @@ function initSeason() { renderSeason(); }
 function runTemporada() {
   const s = seasons[currentSeason];
   const ctx = getModeCtx();
-  askClaude(`[TEMPORADA]\nTemporada: ${s.label}\nNicho: outdoor / aventura en Chile${ctx}\n\nCrea plan de contenido de 4 semanas. Para cada semana: 3 posts con formato, idea específica, tipo y tip de producción estacional. Al final, 3 recomendaciones estratégicas para esta temporada. Tabla con |.`, 'temp-out', 'temp-text');
+  const n = currentNicho;
+  askClaude(`[TEMPORADA]\nNicho: ${n}\nTemporada: ${s.label}${ctx}\n\nCrea plan de contenido de 4 semanas para el nicho "${n}" en esta temporada. Para cada semana: 3 posts con formato, idea específica relacionada al nicho y la temporada, tipo de contenido y tip de producción. Al final, 3 recomendaciones estratégicas para esta temporada en ${n}. Tabla con |. Sin asteriscos.`, 'temp-out', 'temp-text');
 }
 
 // ── ANÁLISIS ──────────────────────────────────
@@ -716,8 +831,9 @@ function deleteMet(id) { metrics = metrics.filter(m => m.id !== id); persist(); 
 function runAnalisis() {
   const tipo = v('anal-tipo'), ctx2 = v('anal-ctx');
   const ctx = getModeCtx();
+  const n = currentNicho;
   const mets = metrics.slice(0, 8).map(m => `${m.title}: ${m.views} views, ${m.likes} likes, ${m.cmts} cmts, ${m.saves} guardados`).join(' | ');
-  askClaude(`[ANÁLISIS]\nTipo: ${tipo}${mets ? '\nMétricas guardadas: ' + mets : ''}${ctx2 ? '\nContexto extra: ' + ctx2 : ''}${ctx}\n\nAnaliza y responde: qué está funcionando, qué no, qué repetir y escalar, qué cambiar. 3 recomendaciones concretas para los próximos 30 días. Si no hay datos, da benchmarks para cuentas outdoor Chile <50k.`, 'anal-out', 'anal-text');
+  askClaude(`[ANÁLISIS]\nNicho: ${n}\nTipo: ${tipo}${mets ? '\nMétricas guardadas: ' + mets : ''}${ctx2 ? '\nContexto extra: ' + ctx2 : ''}${ctx}\n\nAnaliza el rendimiento para un creador de ${n} en Instagram. Responde: qué está funcionando, qué no, qué repetir y escalar, qué cambiar. 3 recomendaciones concretas para los próximos 30 días. Si no hay datos suficientes, da benchmarks de referencia para cuentas de ${n} con menos de 50k seguidores. Sin asteriscos.`, 'anal-out', 'anal-text');
 }
 
 // ── PROYECTOS ─────────────────────────────────
@@ -772,7 +888,8 @@ function runProyecto() {
   const p = projects.find(x => x.id === id);
   if (!p) return;
   const ctx = getModeCtx();
-  askClaude(`[FLUJO COMPLETO]\nFormato: ${p.fmt}\nIdea: ${p.title}${ctx}\n\nGenera TODO:\n1. HOOK — 3 opciones\n2. GUIÓN completo\n3. PLAN DE TOMAS máx 8\n4. CAPTION listo para publicar\n5. HASHTAGS — 3 grupos\n\nSepara secciones con: ---`, 'proj-out', 'proj-text');
+  const n = currentNicho;
+  askClaude(`[FLUJO COMPLETO]\nNicho: ${n}\nFormato: ${p.fmt}\nIdea: ${p.title}${ctx}\n\nGenera TODO para el nicho "${n}":\n1. HOOK — 3 opciones\n2. GUIÓN completo con tomas en [corchetes]\n3. PLAN DE TOMAS máx 8\n4. CAPTION listo para publicar con emojis y CTA\n5. HASHTAGS — nicho específico de ${n} / medio / masivo\n\nSepara secciones con: ---`, 'proj-out', 'proj-text');
 }
 
 // ── FORMATOS ──────────────────────────────────
@@ -780,6 +897,230 @@ function showFmtDetail(fmt, desc) {
   const el = document.getElementById('fmt-detail');
   el.style.display = 'block';
   el.innerHTML = `<strong style="color:var(--text)">${fmt}</strong> — ${desc}`;
+}
+
+// ── DYNAMIC DURATION OPTIONS ─────────────────
+const durOptions = {
+  'Reels': {
+    label: 'Duración del Reel',
+    hint: 'El algoritmo favorece Reels entre 30–60 seg con alta retención.',
+    options: ['15–30 segundos (impacto rápido)','30–60 segundos (óptimo para alcance)','60–90 segundos (storytelling completo)']
+  },
+  'Carrusel': {
+    label: 'Cantidad de slides',
+    hint: 'Los carruseles de 7–10 slides generan más tiempo de deslizamiento y guardados.',
+    options: ['3–4 slides (lista rápida)','5–6 slides (desarrollo medio)','7–8 slides (guía completa)','9–10 slides (carrusel educativo extenso)']
+  },
+  'Foto + caption': {
+    label: 'Extensión del caption',
+    hint: 'Las fotos con caption largo y storytelling tienen mayor tiempo de lectura y comentarios.',
+    options: ['Caption corto (1–3 líneas)','Caption medio (4–8 líneas)','Caption largo con storytelling (10+ líneas)']
+  },
+  'Stories en secuencia': {
+    label: 'Cantidad de stories',
+    hint: 'Una secuencia de 3–5 stories bien conectadas tiene mejor retención que una larga.',
+    options: ['2–3 stories (mensaje directo)','4–5 stories (secuencia narrativa)','6–8 stories (mini-serie)','10+ stories (contenido extenso)']
+  },
+  'Live': {
+    label: 'Duración del Live',
+    hint: 'Los primeros 5 min son críticos para que el algoritmo notifique a tus seguidores.',
+    options: ['15–20 minutos (Q&A corto)','30–45 minutos (contenido estándar)','60+ minutos (sesión completa)']
+  }
+};
+
+function updateDurOptions() {
+  const fmt = v('fl-fmt');
+  const cfg = durOptions[fmt] || durOptions['Reels'];
+  const lbl = document.getElementById('fl-dur-label');
+  const sel = document.getElementById('fl-dur');
+  const hint = document.getElementById('fl-dur-hint');
+  if (lbl) lbl.textContent = cfg.label;
+  if (hint) hint.textContent = cfg.hint;
+  if (sel) {
+    sel.innerHTML = cfg.options.map(o => `<option>${o}</option>`).join('');
+  }
+}
+
+// ── NICHO-BASED TRENDS ────────────────────────
+const nichoTrends = {
+  'outdoor': [
+    { t: 'POV: sobreempaca vs ultralight', d: 'Comparación con humor. Alto engagement en comunidades outdoor. Reel o Carrusel.', idea: 'POV: soy el que sobreempaca vs la persona ultralight' },
+    { t: 'Rating honesto de gear post-uso real', d: 'Reviews auténticos después de usarlo de verdad generan más confianza que unboxings.', idea: 'rating honesto de mi gear después de 50 salidas — qué quedó y qué botaría' },
+    { t: 'Lo que nadie muestra del outdoor en IG', d: 'Romper la narrativa perfecta — ampollas, lluvia, errores. Alto engagement emocional.', idea: 'lo que nadie muestra del outdoor en Instagram — la realidad sin filtros' },
+    { t: 'Pack conmigo para [destino]', d: 'Formato "get ready with me" adaptado. Muy buscado, alta retención.', idea: 'pack conmigo para trekking de 3 días en la cordillera' },
+    { t: 'El spot que descubrí a 2h de casa', d: 'Contenido hiperlocal. Los guardados explotan porque la audiencia quiere ir.', idea: 'el spot que descubrí a 2 horas de Santiago que casi nadie conoce' },
+    { t: 'Cuánto gasté en [ruta] — desglose real', d: 'Transparencia financiera + outdoor = altísimo alcance. Une dos nichos de máximo engagement.', idea: 'cuánto gasté en mi última ruta de trekking — desglose real y honesto' }
+  ],
+  'fitness': [
+    { t: 'Lo que cambié en mi rutina que lo transformó todo', d: 'Storytelling personal de transformación. Altísima retención y comentarios.', idea: 'el cambio en mi rutina que transformó mis resultados en 60 días' },
+    { t: 'Rating honesto de suplementos que realmente usé', d: 'Reviews post-uso con resultados reales. Más credible que publicidad.', idea: 'rating honesto de los suplementos que usé este año — del 1 al 10' },
+    { t: 'Lo que hacen diferente las personas en forma', d: 'Hábitos y mentalidad. Muy guardado por gente que aspira a ese estilo de vida.', idea: 'los 5 hábitos que tienen en común las personas que se mantienen en forma' },
+    { t: 'Rutina completa en X minutos — sígueme', d: 'Formato follow-along. Alta retención porque la audiencia entrena contigo.', idea: 'rutina completa de 20 minutos sin equipo — sígueme paso a paso' },
+    { t: 'Lo que comí en un día entrenando fuerte', d: '"What I eat in a day" sigue siendo uno de los formatos más buscados en fitness.', idea: 'lo que comí en un día de entrenamiento fuerte — todo el desglose' },
+    { t: 'El ejercicio que todos hacen mal', d: 'Formato de corrección. Genera debate, comentarios y mucho guardado.', idea: 'el ejercicio que el 90% hace mal y por qué te puede lesionar' }
+  ],
+  'gastronomia': [
+    { t: 'Receta viral en menos de 60 segundos', d: 'Time-lapse de preparación completa. El formato más compartido en gastronomía.', idea: 'receta que se hace en 15 minutos y parece de restaurant — paso a paso' },
+    { t: 'Lo que pedí vs lo que llegó', d: 'Comparación honesta de restaurantes. Alto engagement por identificación.', idea: 'probé los 5 restaurantes más hypeados de [ciudad] — lo que pedí vs lo que llegó' },
+    { t: 'El ingrediente secreto que cambia todo', d: 'Genera curiosidad inmediata. El hook funciona en cualquier receta.', idea: 'el ingrediente secreto que usan los chefs y nadie en casa usa' },
+    { t: 'Lo preparé con el presupuesto más bajo posible', d: 'Contenido económico + gastronomía = altísimo alcance.', idea: 'preparé una cena para 4 personas con menos de $5000 — así quedó' },
+    { t: 'Rating de productos del supermercado', d: 'Reviews de productos cotidianos. Muy guardado porque la audiencia los compra.', idea: 'probé todos los chocolates del supermercado y los rankeé honestamente' },
+    { t: 'El plato típico que nadie prepara bien', d: 'Controversia controlada + educación culinaria. Gran engagement en comentarios.', idea: 'así se prepara el [plato típico] de verdad — y no como lo hacen todos' }
+  ],
+  'viajes': [
+    { t: 'El destino barato que nadie menciona', d: 'Contenido de valor alto. Los guardados explotan porque la gente quiere ir.', idea: 'el destino más barato y menos conocido que visité este año — todo lo que necesitas saber' },
+    { t: 'Cuánto gasté en [destino] — desglose real', d: 'Transparencia de costos reales. Supera en alcance a cualquier contenido aspiracional.', idea: 'cuánto gasté en 7 días en [destino] — desglose real de todos los gastos' },
+    { t: 'Lo que nadie te dice de viajar solo', d: 'Storytelling personal + información práctica. Alta identificación emocional.', idea: 'lo que nadie te dice de viajar solo por primera vez — mi experiencia real' },
+    { t: 'El itinerario perfecto de X días', d: 'Contenido evergreen muy guardado. Funciona mejor como Carrusel.', idea: 'el itinerario perfecto para 5 días en [destino] — hora por hora' },
+    { t: 'Cómo conseguí vuelos baratos — método real', d: 'Tips prácticos con alto valor percibido. Guardado masivo.', idea: 'cómo consigo vuelos baratos — el método que uso siempre' },
+    { t: 'Expectativa vs realidad del destino trending', d: 'Formato comparativo honesto. Alto engagement porque la gente lo ha visto en otras cuentas.', idea: 'expectativa vs realidad de [destino trending] — la verdad después de visitarlo' }
+  ],
+  'tecnologia': [
+    { t: 'Lo probé por 30 días — mi veredicto real', d: 'Review de uso prolongado. Más credible que reviews inmediatos.', idea: 'usé [producto/app/herramienta] por 30 días — mi veredicto honesto' },
+    { t: 'Herramientas que uso todos los días y nadie conoce', d: 'Lista de herramientas lesser-known. Alto guardado por utilidad directa.', idea: 'las 5 herramientas que uso todos los días y que casi nadie conoce' },
+    { t: 'Lo que la IA puede hacer por tu trabajo hoy', d: 'Formato de valor inmediato. Altísima retención porque muestra resultados en vivo.', idea: 'lo que la IA puede hacer por tu trabajo hoy — demostración en vivo' },
+    { t: 'Error que cometen todos al comprar tech', d: 'Formato de advertencia. Alto engagement por identificación y comentarios.', idea: 'el error que cometen todos al comprar [categoría tech] y cómo evitarlo' },
+    { t: 'Setup completo para trabajo desde casa', d: 'Contenido aspiracional + práctico. Los guardados son altísimos.', idea: 'mi setup completo para trabajar desde casa — cada cosa y su precio' },
+    { t: 'La app que cambió cómo hago [tarea cotidiana]', d: 'Storytelling de productividad. Muy compartido en nichos tech y emprendimiento.', idea: 'la app que cambió cómo gestiono mi tiempo — antes y después' }
+  ],
+  'moda': [
+    { t: 'Construí 5 outfits con solo 3 piezas', d: 'Formato de versatilidad. Muy guardado por practicidad directa.', idea: '5 outfits distintos con solo 3 piezas de ropa — cómo combinar todo' },
+    { t: 'Lo que compré vs lo que realmente uso', d: 'Honestidad sobre consumo. Conecta emocionalmente y genera comentarios.', idea: 'todo lo que compré este año vs lo que realmente usé — revisión honesta' },
+    { t: 'Cómo encontrar piezas clave baratas', d: 'Contenido económico + moda = altísimo alcance en audiencia amplia.', idea: 'cómo encontrar piezas clave sin gastar fortunas — mis trucos reales' },
+    { t: 'Rating honesto de marcas que compré', d: 'Reviews post-compra con opinión real. Más útil que publicidad.', idea: 'rating honesto de las marcas que compré este año — del 1 al 10' },
+    { t: 'El básico que eleva cualquier outfit', d: 'Consejo específico de alto valor. Muy guardado y compartido.', idea: 'la pieza básica que eleva cualquier outfit — y por qué la mayoría no la tiene' },
+    { t: 'Get ready with me — evento especial', d: 'Formato GRWM con proceso completo de producción. Alta retención.', idea: 'get ready with me para [evento] — todo el proceso desde cero' }
+  ],
+  'negocios': [
+    { t: 'Lo que aprendí perdiendo dinero', d: 'Storytelling de fracaso con aprendizaje. Máxima credibilidad y engagement.', idea: 'lo que aprendí perdiendo dinero en mi primer negocio — lecciones reales' },
+    { t: 'Desglose real de mis ingresos este mes', d: 'Transparencia de números reales. Uno de los formatos de mayor alcance en negocios.', idea: 'desglose real de mis ingresos de este mes — todo lo que entró y salió' },
+    { t: 'El error que cometen todos al emprender', d: 'Formato de advertencia con experiencia personal. Alto engagement y guardado.', idea: 'el error que cometen casi todos al emprender y cómo lo evité tarde' },
+    { t: 'Cómo construí [algo] sin inversión inicial', d: 'Casos de estudio bootstrapped. Altísimo alcance porque todos quieren hacerlo.', idea: 'cómo construí [producto/negocio] desde cero sin inversión inicial' },
+    { t: 'Lo que nadie te dice sobre trabajar para ti mismo', d: 'Realidad del emprendimiento vs expectativa. Conexión emocional fuerte.', idea: 'lo que nadie te dice sobre renunciar y trabajar para ti mismo' },
+    { t: 'Las herramientas que uso para gestionar todo', d: 'Stack de herramientas. Alto guardado por valor práctico directo.', idea: 'las herramientas que uso para gestionar todo mi negocio solo — sin equipo' }
+  ],
+  'default': [
+    { t: 'Mi experiencia real con [tema] — sin filtros', d: 'Honestidad y autenticidad siempre generan más engagement que el contenido perfecto.', idea: 'mi experiencia real con este tema — lo que nadie cuenta' },
+    { t: 'Rating honesto después de probarlo de verdad', d: 'Reviews post-uso real generan confianza y guardados.', idea: 'rating honesto después de probarlo por más de un mes' },
+    { t: 'Lo que cambié que transformó mis resultados', d: 'Storytelling de transformación. Alta retención y comentarios.', idea: 'el cambio que transformó mis resultados — antes y después real' },
+    { t: 'El error que todos cometen en [nicho]', d: 'Formato de advertencia. Alto engagement por identificación.', idea: 'el error que comete casi todo el mundo en este nicho y cómo evitarlo' },
+    { t: 'Lo que nadie te cuenta sobre [tema]', d: 'Promesa de información exclusiva. Genera curiosidad y alto alcance.', idea: 'lo que nadie te cuenta sobre este tema y deberías saber' },
+    { t: 'Cuánto cuesta realmente [cosa aspiracional]', d: 'Transparencia de costos reales. Supera en alcance al contenido aspiracional.', idea: 'cuánto cuesta realmente esto — el desglose honesto' }
+  ]
+};
+
+const nichoCreadores = {
+  'outdoor': [
+    { name: '@juanpa.zurita', desc: 'Aventuras extremas y viajes — storytelling épico', tipo: 'Aventura / lifestyle' },
+    { name: '@krissycela', desc: 'Fitness outdoor y estilo de vida activo', tipo: 'Fitness outdoor' },
+    { name: '@chileoutdoor', desc: 'Rutas y destinos chilenos — referente local', tipo: 'Local Chile' },
+    { name: '@hikelikehavoc', desc: 'Trekking ultralight y fotografía de montaña', tipo: 'Ultralight / foto' },
+    { name: '@meisonleh', desc: 'Aventuras en solitario y contenido minimalista', tipo: 'Solo adventures' }
+  ],
+  'fitness': [
+    { name: '@chloeting', desc: 'Rutinas caseras — formato ultra-replicable', tipo: 'Entrenamiento en casa' },
+    { name: '@athleanx', desc: 'Educación fitness con ciencia detrás', tipo: 'Educativo / corrección' },
+    { name: '@natacha.oceane', desc: 'Fitness realista y sin filtros', tipo: 'Autenticidad / lifestyle' },
+    { name: '@cbum', desc: 'Bodybuilding profesional — contenido aspiracional', tipo: 'Culturismo' },
+    { name: '@joealexfitness', desc: 'Transformaciones y motivación con humor', tipo: 'Motivacional / humor' }
+  ],
+  'gastronomia': [
+    { name: '@joshuaweissman', desc: 'Recetas de restaurant en casa — formato educativo', tipo: 'Educativo / recetas' },
+    { name: '@gordonramsay', desc: 'Autoridad culinaria con personalidad fuerte', tipo: 'Chef profesional' },
+    { name: '@tabitha.brown', desc: 'Cocina con personalidad auténtica y cálida', tipo: 'Lifestyle / autenticidad' },
+    { name: '@ethan.chlebowski', desc: 'Ciencia detrás de la cocina — contenido muy guardado', tipo: 'Educativo / ciencia' },
+    { name: '@bingingwithbabish', desc: 'Recreación de recetas con storytelling', tipo: 'Storytelling / recreación' }
+  ],
+  'viajes': [
+    { name: '@lost.leblanc', desc: 'Viajes de lujo con cinematografía excepcional', tipo: 'Aspiracional / cinematic' },
+    { name: '@kara.and.nate', desc: 'Viajes full-time en pareja — muy relacionable', tipo: 'Pareja / lifestyle' },
+    { name: '@samkolder', desc: 'Edición hiper-dinámica y destinos épicos', tipo: 'Cinematic / edición' },
+    { name: '@adventurejay', desc: 'Viajes económicos y consejos prácticos', tipo: 'Budget travel' },
+    { name: '@oneika.the.traveller', desc: 'Viajes solo — perspectiva personal y auténtica', tipo: 'Solo travel' }
+  ],
+  'tecnologia': [
+    { name: '@mkbhd', desc: 'Reviews tech de alta producción — referente del nicho', tipo: 'Reviews premium' },
+    { name: '@linus.tech', desc: 'Tech con humor y experimentos extremos', tipo: 'Entretenimiento / tech' },
+    { name: '@ali.abdaal', desc: 'Productividad + tech — muy guardado', tipo: 'Productividad' },
+    { name: '@cortexfutura', desc: 'Tech explicado de forma clara y visual', tipo: 'Educativo visual' },
+    { name: '@justinodell', desc: 'Setups y gadgets — muy aspiracional', tipo: 'Setup / gadgets' }
+  ],
+  'moda': [
+    { name: '@tardyfortheparty', desc: 'Outfits cotidianos con storytelling personal', tipo: 'Lifestyle / cotidiano' },
+    { name: '@wisdom.kaye', desc: 'Moda experimental y editorial', tipo: 'Editorial / experimental' },
+    { name: '@leendadecker', desc: 'Moda accesible y outfits replicables', tipo: 'Accesible / cotidiano' },
+    { name: '@sunnyyyde', desc: 'Aesthetic minimalista y curado', tipo: 'Minimalista / aesthetic' },
+    { name: '@itsjojosiwa', desc: 'Moda con personalidad fuerte y consistente', tipo: 'Personalidad / marca' }
+  ],
+  'negocios': [
+    { name: '@garyvee', desc: 'Emprendimiento y marketing — contenido raw y directo', tipo: 'Motivacional / marketing' },
+    { name: '@alexhormozi', desc: 'Negocios con datos y frameworks concretos', tipo: 'Educativo / frameworks' },
+    { name: '@codie.sanchez', desc: 'Negocios no convencionales y libertad financiera', tipo: 'Finanzas / independencia' },
+    { name: '@businessmindset101', desc: 'Mentalidad emprendedora — muy compartido', tipo: 'Mentalidad' },
+    { name: '@patrickbetdavid', desc: 'Análisis de negocios profundo', tipo: 'Análisis / educativo' }
+  ],
+  'default': [
+    { name: 'MrBeast', desc: 'Storytelling de alto impacto y valor extremo para el espectador', tipo: 'Entretenimiento masivo' },
+    { name: 'Emma Chamberlain', desc: 'Autenticidad y edición lo-fi que conecta emocionalmente', tipo: 'Lifestyle / autenticidad' },
+    { name: 'Nas Daily', desc: 'Historias cortas con estructura narrativa impecable', tipo: 'Storytelling educativo' },
+    { name: 'Airrack', desc: 'Challenges y experiencias únicas con gran producción', tipo: 'Entretenimiento / retos' },
+    { name: 'Matt D\'Avella', desc: 'Documental minimalista — estética y mensaje fuertes', tipo: 'Cinematic / lifestyle' }
+  ]
+};
+
+function getNichoKey() {
+  const n = currentNicho.toLowerCase();
+  if (n.includes('outdoor') || n.includes('aventur') || n.includes('trekk') || n.includes('montaña') || n.includes('senderis')) return 'outdoor';
+  if (n.includes('fitness') || n.includes('entren') || n.includes('gym') || n.includes('deporte') || n.includes('ejercicio')) return 'fitness';
+  if (n.includes('gastro') || n.includes('cocina') || n.includes('comida') || n.includes('receta') || n.includes('chef')) return 'gastronomia';
+  if (n.includes('viaje') || n.includes('travel') || n.includes('turism') || n.includes('destino')) return 'viajes';
+  if (n.includes('tecno') || n.includes('tech') || n.includes('gadget') || n.includes('software') || n.includes('ia') || n.includes('digital')) return 'tecnologia';
+  if (n.includes('moda') || n.includes('fashion') || n.includes('outfit') || n.includes('ropa') || n.includes('estilo')) return 'moda';
+  if (n.includes('negocio') || n.includes('empren') || n.includes('marketing') || n.includes('finanza') || n.includes('startup')) return 'negocios';
+  return 'default';
+}
+
+function renderTrends() {
+  const key = getNichoKey();
+  const trends = nichoTrends[key] || nichoTrends['default'];
+  const list = document.getElementById('trend-list');
+  const title = document.getElementById('trend-list-title');
+  const sub = document.getElementById('trend-page-sub');
+  if (!list) return;
+  if (title) title.textContent = `Tendencias activas — ${currentNicho}`;
+  if (sub) sub.textContent = `Formatos virales adaptados a tu nicho: ${currentNicho}`;
+  list.innerHTML = trends.map((t, i) => `
+    <div class="trend-item">
+      <div class="trend-n">0${i+1}</div>
+      <div>
+        <div class="trend-t">${t.t}</div>
+        <div class="trend-d">${t.d}</div>
+        <span class="trend-cta" onclick="injectTrend('${t.idea.replace(/'/g,"\\'")}')">→ usar esta idea</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderCreadores() {
+  const key = getNichoKey();
+  const crs = nichoCreadores[key] || nichoCreadores['default'];
+  const list = document.getElementById('ref-list');
+  const title = document.getElementById('ref-title');
+  if (!list) return;
+  if (title) title.textContent = `Creadores de referencia — ${currentNicho}`;
+  list.innerHTML = crs.map(c => `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0;font-family:'DM Mono',monospace">${c.name.replace('@','').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${c.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;line-height:1.4">${c.desc}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em">${c.tipo}</div>
+      </div>
+    </div>`).join('');
+}
+
+function runCreadores() {
+  const n = currentNicho;
+  askClaude(`[CREADORES DE REFERENCIA]\nNicho: ${n}\n\nDame 8 creadores de Instagram que sean referentes en el nicho de ${n}. Para cada uno: handle de Instagram, por qué es referente, qué puedo aprender de su estrategia de contenido, y qué tipo de contenido les funciona mejor. Enfócate en creadores con entre 10k y 2M de seguidores (más accesibles como referencia). En español, sin asteriscos.`, 'trend-out', 'trend-text');
 }
 
 // ── BOOT ──────────────────────────────────────
