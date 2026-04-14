@@ -859,7 +859,7 @@ async function askClaude(prompt, outBoxId, textId) {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 1500,
         system: 'Eres un experto en creación de contenido viral para Instagram. Adaptas tu conocimiento a cualquier nicho o temática que te indiquen. Respondes siempre en español. Eres directo, concreto y sin relleno. Nunca usas asteriscos, markdown, ni formato especial. Solo texto limpio y bien estructurado con números y guiones cuando corresponda.',
         messages: [{ role: 'user', content: prompt }]
